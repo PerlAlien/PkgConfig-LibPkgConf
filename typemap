@@ -1,0 +1,12 @@
+pkgconf_client_t* T_PKGCONF_CLIENT
+
+OUTPUT
+T_PKGCONF_CLIENT
+  sv_setref_pv($arg, \"PkgConfig::LibPkgConf::Client\", (void*) $var);
+
+INPUT
+T_PKGCONF_CLIENT
+  if(sv_isobject($arg) && sv_derived_from($arg, \"PkgConfig::LibPkgConf::Client\"))
+    $var = INT2PTR($type, SvIV((SV*) SvRV($arg)));
+  else
+    Perl_croak(aTHX_ \"$var is not of type PkgConfig::LibPkgConf::Client\");

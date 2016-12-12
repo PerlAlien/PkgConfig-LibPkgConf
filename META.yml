@@ -1,0 +1,32 @@
+---
+abstract: 'Perl bindings for libpkgconf'
+author:
+  - 'Graham Ollis <plicease@cpan.org>'
+build_requires:
+  ExtUtils::CBuilder: '0'
+  Test::More: '0.94'
+configure_requires:
+  Module::Build: '0.38'
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4218, CPAN::Meta::Converter version 2.150005'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: PkgConfig-LibPkgConf
+provides:
+  PkgConfig::LibPkgConf:
+    file: lib/PkgConfig/LibPkgConf.pm
+    version: '0.01'
+  PkgConfig::LibPkgConf::Client:
+    file: lib/PkgConfig/LibPkgConf/Client.pm
+requires:
+  perl: '5.008001'
+resources:
+  IRC: irc://irc.perl.org/#native
+  MailingList: https://groups.google.com/forum/#!forum/perl5-alien
+  bugtracker: http://github.com/plicease/PkgConfig-LibPkgConf/issues
+  license: http://dev.perl.org/licenses/
+  repository: http://github.com/plicease/PkgConfig-LibPkgConf
+version: '0.01'
+x_serialization_backend: 'CPAN::Meta::YAML version 0.018'
