@@ -4,3 +4,6 @@
 /blib
 /PkgConfig-LibPkgConf-*
 *.bak
+*.c
+*.o
+*.obj

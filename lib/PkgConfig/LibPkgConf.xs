@@ -6,11 +6,10 @@
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
-pkgconf_client_t*
-new(class)
-    const char *class
+IV
+_new()
   CODE:
-    RETVAL = pkgconf_client_new(NULL);
+    RETVAL = PTR2IV(pkgconf_client_new(NULL));
   OUTPUT:
     RETVAL
 

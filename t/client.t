@@ -47,4 +47,23 @@ subtest 'set buildroot' => sub {
   
 };
 
+subtest 'subclass client' => sub {
+
+  {
+    package
+      MyClient;
+    
+    use base qw( PkgConfig::LibPkgConf::Client );
+  }
+  
+  my $client = MyClient->new;
+  
+  isa_ok $client, 'MyClient';
+  isa_ok $client, 'PkgConfig::LibPkgConf::Client';
+
+  undef $client;
+  
+  ok 1, 'did not crash on undef';
+};
+
 done_testing;
