@@ -87,6 +87,9 @@ compare_version(a,b)
     const char *a
     const char *b
   CODE:
+    /* TODO: this isn't documented yet, so make sure   **
+    **       that it is really part of the API before  **
+    **       exposing it.                              **/
     RETVAL = pkgconf_compare_version(a,b);
   OUTPUT:
     RETVAL
