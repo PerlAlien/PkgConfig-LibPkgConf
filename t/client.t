@@ -66,4 +66,15 @@ subtest 'subclass client' => sub {
   ok 1, 'did not crash on undef';
 };
 
+subtest 'find' => sub {
+
+  $ENV{PKG_CONFIG_PATH} = 'corpus/lib1';
+  my $client = PkgConfig::LibPkgConf::Client->new;
+
+  is( $client->find('completely-bogus-non-existent'), undef);
+  
+  isa_ok( $client->find('foo'), 'PkgConfig::LibPkgConf::Package' );
+
+};
+
 done_testing;

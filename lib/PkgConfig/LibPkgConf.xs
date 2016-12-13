@@ -4,12 +4,31 @@
 
 #include <pkgconf/libpkgconf.h>
 
+static bool
+my_error_handler(const char *msg)
+{
+  warn(msg);
+  return 1;
+}
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 IV
 _new()
+  INIT:
+    const char *logfile;
+    FILE *logfile_fp;
+    pkgconf_client_t *self;
   CODE:
-    RETVAL = PTR2IV(pkgconf_client_new(NULL));
+    self = pkgconf_client_new(my_error_handler);
+    logfile = getenv("PKG_CONFIG_LOG");
+    if(logfile != NULL)
+    {
+      logfile_fp = fopen(logfile, "w");
+      pkgconf_audit_set_log(self, logfile_fp);
+    }
+    pkgconf_pkg_dir_list_build(self, 0);
+    RETVAL = PTR2IV(self);
   OUTPUT:
     RETVAL
 
@@ -57,6 +76,80 @@ _find(self, name, flags)
   OUTPUT:
     RETVAL
     
+
+MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Package
+
+int
+refcount(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->refcount;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+id(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->id;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+filename(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->filename;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+realname(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->realname;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+version(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->version;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+description(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->description;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+url(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->url;
+  OUTPUT:
+    RETVAL
+
+
+const char *
+pc_filedir(self)
+    pkgconf_pkg_t* self
+  CODE:
+    RETVAL = self->pc_filedir;
+  OUTPUT:
+    RETVAL
+
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
 

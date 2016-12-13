@@ -14,7 +14,7 @@ sub new
 sub find
 {
   my($self, $name, $flags) = @_;
-  my $ptr = _lookup($self, $name, $flags);
+  my $ptr = _find($self, $name, $flags||0);
   $ptr ? bless { client => $self, name => $name, ptr => $ptr }, 'PkgConfig::LibPkgConf::Package' : ();
 }
 
