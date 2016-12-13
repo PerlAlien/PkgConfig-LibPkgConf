@@ -2,6 +2,22 @@ use strict;
 use warnings;
 use Module::Build;
 
+my $ccflags = '';
+my $ldflags = '';
+
+# TODO: this is to work around pre-release issues.
+#       should be fixed before release to CPAN!
+if($ENV{TRAVIS})
+{
+  $ccflags  = '-I/tmp/pkgconf/include -I/tmp/pkgconf/src';
+  $ldflags = '-L/tmp/pkgconf/lib -lpkgconf';
+}
+else
+{
+  $ccflags  = '-I/home/ollisg/opt/pkgconf/include -I/home/ollisg/dev/pkgconf';
+  $ldflags = '-L/home/ollisg/opt/pkgconf/lib -lpkgconf';
+}
+
 my $builder = Module::Build->new(
   module_name        => 'PkgConfig::LibPkgConf',
   dist_abstract      => 'Perl bindings for libpkgconf',
@@ -17,8 +33,8 @@ my $builder = Module::Build->new(
   requires => {
     'perl' => '5.008001',
   },
-  extra_compiler_flags => '-I/home/ollisg/opt/pkgconf/include -I/home/ollisg/dev/pkgconf',
-  extra_linker_flags   => '-L/home/ollisg/opt/pkgconf/lib -lpkgconf',
+  extra_compiler_flags => $ccflags,
+  extra_linker_flags   => $ldflags,
   meta_merge => {
     resources => {
       repository => "http://github.com/plicease/PkgConfig-LibPkgConf",
