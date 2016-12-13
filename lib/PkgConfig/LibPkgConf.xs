@@ -46,3 +46,26 @@ DESTROY(self)
   CODE:
     pkgconf_client_free(self);
     
+
+MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
+
+void
+argv_split(src)
+    const char *src
+  INIT:
+    int argc, ret, i;
+    char **argv;
+  PPCODE:
+    ret = pkgconf_argv_split(src, &argc, &argv);
+    if(ret == 0)
+    {
+      for(i=0; i<argc; i++)
+      {
+        XPUSHs(sv_2mortal(newSVpv(argv[i],0)));
+      }
+      pkgconf_argv_free(argv);
+    }
+    else
+    {
+      croak("error in argv_split");
+    }
