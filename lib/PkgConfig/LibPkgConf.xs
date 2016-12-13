@@ -5,7 +5,7 @@
 #include <pkgconf/libpkgconf.h>
 
 static bool
-my_error_handler(const char *msg)
+my_error_handler(const char *msg, pkgconf_client_t *client, void *data)
 {
   warn(msg);
   return 1;
@@ -20,7 +20,7 @@ _new()
     FILE *logfile_fp;
     pkgconf_client_t *self;
   CODE:
-    self = pkgconf_client_new(my_error_handler);
+    self = pkgconf_client_new(my_error_handler, NULL);
     logfile = getenv("PKG_CONFIG_LOG");
     if(logfile != NULL)
     {
@@ -147,6 +147,66 @@ pc_filedir(self)
     pkgconf_pkg_t* self
   CODE:
     RETVAL = self->pc_filedir;
+  OUTPUT:
+    RETVAL
+
+
+SV *
+libs(self)
+    pkgconf_pkg_t* self
+  INIT:
+    int len;
+  CODE:
+    len = pkgconf_fragment_render_len(&self->libs);
+    RETVAL = newSV(len == 1 ? len : len-1);
+    SvPOK_on(RETVAL);
+    SvCUR_set(RETVAL, len-1);
+    pkgconf_fragment_render_buf(&self->libs, SvPVX(RETVAL), len);
+  OUTPUT:
+    RETVAL
+
+
+SV *
+libs_private(self)
+    pkgconf_pkg_t* self
+  INIT:
+    int len;
+  CODE:
+    len = pkgconf_fragment_render_len(&self->libs_private);
+    RETVAL = newSV(len == 1 ? len : len-1);
+    SvPOK_on(RETVAL);
+    SvCUR_set(RETVAL, len-1);
+    pkgconf_fragment_render_buf(&self->libs_private, SvPVX(RETVAL), len);
+  OUTPUT:
+    RETVAL
+
+
+SV *
+cflags(self)
+    pkgconf_pkg_t* self
+  INIT:
+    int len;
+  CODE:
+    len = pkgconf_fragment_render_len(&self->cflags);
+    RETVAL = newSV(len == 1 ? len : len-1);
+    SvPOK_on(RETVAL);
+    SvCUR_set(RETVAL, len-1);
+    pkgconf_fragment_render_buf(&self->cflags, SvPVX(RETVAL), len);
+  OUTPUT:
+    RETVAL
+
+
+SV *
+cflags_private(self)
+    pkgconf_pkg_t* self
+  INIT:
+    int len;
+  CODE:
+    len = pkgconf_fragment_render_len(&self->cflags_private);
+    RETVAL = newSV(len == 1 ? len : len-1);
+    SvPOK_on(RETVAL);
+    SvCUR_set(RETVAL, len-1);
+    pkgconf_fragment_render_buf(&self->cflags_private, SvPVX(RETVAL), len);
   OUTPUT:
     RETVAL
 

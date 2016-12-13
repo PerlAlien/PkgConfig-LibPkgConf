@@ -13,12 +13,16 @@ subtest dump => sub {
   
   ok $pkg, "pkg = $pkg";
 
-  note "refcount    = @{[ $pkg->refcount ]}";
-  note "id          = @{[ $pkg->id ]}";
-  note "filename    = @{[ $pkg->filename ]}";
-  note "realname    = @{[ $pkg->realname ]}";
-  note "version     = @{[ $pkg->version ]}";
-  note "description = @{[ $pkg->description ]}";
+  note "refcount       = @{[ $pkg->refcount ]}";
+  note "id             = @{[ $pkg->id ]}";
+  note "filename       = @{[ $pkg->filename ]}";
+  note "realname       = @{[ $pkg->realname ]}";
+  note "version        = @{[ $pkg->version ]}";
+  note "description    = @{[ $pkg->description ]}";
+  note "libs           = @{[ $pkg->libs ]}";
+  note "libs_private   = @{[ $pkg->libs_private ]}";
+  note "cflags         = @{[ $pkg->cflags ]}";
+  note "cflags_private = @{[ $pkg->cflags_private ]}";
 
   # TODO:
   #note "url         = @{[ $pkg->url ]}";
@@ -30,6 +34,12 @@ subtest dump => sub {
   is $pkg->realname, 'foo', 'realname';
   is $pkg->version, '1.2.3', 'version';
   is $pkg->description, 'A testing pkg-config file', 'description';
+
+  is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
+  is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
+  is $pkg->cflags_private, '-DFOO_STATIC ', 'cflags_private';
+  
 };
 
 done_testing;
+
