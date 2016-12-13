@@ -45,6 +45,17 @@ DESTROY(self)
     pkgconf_client_t *self
   CODE:
     pkgconf_client_free(self);
+
+
+IV
+_find(self, name, flags)
+    pkgconf_client_t *self
+    const char *name
+    unsigned int flags
+  CODE:
+    RETVAL = PTR2IV(pkgconf_pkg_find(self, name, flags));
+  OUTPUT:
+    RETVAL
     
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
@@ -69,3 +80,13 @@ argv_split(src)
     {
       croak("error in argv_split");
     }
+
+
+int
+compare_version(a,b)
+    const char *a
+    const char *b
+  CODE:
+    RETVAL = pkgconf_compare_version(a,b);
+  OUTPUT:
+    RETVAL
