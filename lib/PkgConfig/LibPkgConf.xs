@@ -52,6 +52,23 @@ _init(object, args)
     hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
     hv_store((HV*)SvRV(object), "sv",  2, newSViv(PTR2IV(object)), 0);
 
+
+void
+audit_set_log(object, filename, mode)
+    SV *object
+    const char *filename
+    const char *mode
+  INIT:
+    pkgconf_client_t *self;
+    FILE *fp;
+  CODE:
+    self = INT2PTR(pkgconf_client_t *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "ptr", 3, 0)));
+    fp = fopen(filename, mode);
+    pkgconf_audit_set_log(self, fp);
+    hv_store((HV*)SvRV(object), "log", 3, newSViv(PTR2IV(fp)), 0);
+    
+
+
 const char *
 sysroot_dir(self, ...)
     pkgconf_client_t *self
@@ -83,7 +100,13 @@ DESTROY(...)
   INIT:
     pkgconf_client_t *self;
     SV *object;
+    FILE *fp;
   CODE:
+    if(hv_exists( (HV*) SvRV(ST(0)), "log", 3))
+    {
+      fp = INT2PTR(FILE *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "log", 3, 0)));
+      fclose(fp);
+    }
     self = INT2PTR(pkgconf_client_t *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "ptr", 3, 0)));
     object = INT2PTR(SV *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "sv", 2, 0)));
     pkgconf_client_free(self);
