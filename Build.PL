@@ -2,21 +2,18 @@ use strict;
 use warnings;
 use Module::Build;
 
-my $ccflags = '';
-my $ldflags = '';
+sub try
+{
+  my($flag, $package) = @_;
+  my $flags = `pkgconf $flag $package`;
+  return $flags unless $?;
+  $flags = `pkg-config $flag $package`;
+  return $flags unless $?;
+  die "unable to find pkgconf, pkg-config or $package";
+}
 
-# TODO: this is to work around pre-release issues.
-#       should be fixed before release to CPAN!
-if($ENV{TRAVIS})
-{
-  $ccflags  = '-I/tmp/pkgconf/include -I/tmp/pkgconf/src';
-  $ldflags = '-L/tmp/pkgconf/lib -lpkgconf';
-}
-else
-{
-  $ccflags  = '-I/home/ollisg/opt/pkgconf/include -I/home/ollisg/dev/pkgconf';
-  $ldflags = '-L/home/ollisg/opt/pkgconf/lib -lpkgconf';
-}
+my $ccflags = try '--cflags', 'libpkgconf';
+my $ldflags = try '--libs',   'libpkgconf';
 
 my $builder = Module::Build->new(
   module_name        => 'PkgConfig::LibPkgConf',
@@ -46,3 +43,4 @@ my $builder = Module::Build->new(
 );
 
 $builder->create_build_script;
+

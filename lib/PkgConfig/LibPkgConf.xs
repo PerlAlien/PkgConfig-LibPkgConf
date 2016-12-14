@@ -2,7 +2,7 @@
 #include "perl.h"
 #include "XSUB.h"
 
-#include <pkgconf/libpkgconf.h>
+#include <libpkgconf/libpkgconf.h>
 
 static bool
 my_error_handler(const char *msg, pkgconf_client_t *client, void *data)
