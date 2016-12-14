@@ -18,6 +18,11 @@ subtest 'basic create and destroy' => sub {
   $buildroot = 'undef' unless defined $buildroot;
   
   note "buildroot = $buildroot";
+
+  if(eval { require YAML; 1 })
+  {
+    note YAML::Dump("$client", $client);
+  }
   
   undef $client;
   
@@ -79,14 +84,46 @@ subtest 'find' => sub {
 
 subtest 'error' => sub {
 
-  plan skip_all => 'borked';
+  plan tests => 2;
 
   use PkgConfig::LibPkgConf::Test qw( send_error );
+
+  no warnings 'redefine';
+  local *PkgConfig::LibPkgConf::Client::error = sub {
+    my($self, $msg) = @_;
+    isa_ok $self, 'PkgConfig::LibPkgConf::Client';
+    is $msg, 'this is an error sent';
+  };
   
   my $client = PkgConfig::LibPkgConf::Client->new;
   send_error($client, "this is an error sent");
 
-  ok 1;
+};
+
+subtest 'error in subclass' => sub {
+
+  plan tests => 3;
+  
+  use PkgConfig::LibPkgConf::Test qw( send_error );
+
+  {
+    package
+      MyClient2;
+    
+    use base qw( PkgConfig::LibPkgConf::Client );
+    
+    sub error {
+      my($self, $msg) = @_;
+      Test::More::isa_ok $self, 'PkgConfig::LibPkgConf::Client';
+      Test::More::isa_ok $self, 'MyClient2';
+      Test::More::is $msg, 'this is an error sent2';
+      
+    }
+  }
+
+  my $client = MyClient2->new;
+  send_error($client, "this is an error sent2");
+
 };
 
 done_testing;

@@ -18,11 +18,11 @@ my_error_handler(const char *msg, const pkgconf_client_t *client, const void *da
   
   PUSHMARK(SP);
   EXTEND(SP, 2);
-  PUSHs((SV*)data); /* TODO: this no work */
+  PUSHs((SV*)data);
   PUSHs(sv_2mortal(newSVpv(msg, 0)));
   PUTBACK;
   
-  count = call_pv("PkgConfig::LibPkgConf::Client::error", G_SCALAR);
+  count = call_method("error", G_SCALAR);
   
   SPAGAIN;
   
@@ -37,25 +37,20 @@ my_error_handler(const char *msg, const pkgconf_client_t *client, const void *da
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
-SV *
-new(class)
-    const char *class
+
+void
+_init(object, args)
+    SV *object
+    SV *args
   INIT:
-    HV *hv;
-    SV *sv;
-    const char *logfile;
-    FILE *logfile_fp;
     pkgconf_client_t *self;
   CODE:
-    hv = newHV();
-    RETVAL = sv = sv_bless(newRV_noinc((SV*)hv), gv_stashpv( class, 0 ));
-    self = pkgconf_client_new(my_error_handler, sv);
+    SvREFCNT_inc(object);
+    self = pkgconf_client_new(my_error_handler, object);
+    /* TODO: this should be optional */
     pkgconf_pkg_dir_list_build(self, 0);
-    hv_store(hv, "ptr", 3, newSViv(PTR2IV(self)), 0);
-    
-  OUTPUT:
-    RETVAL
-
+    hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
+    hv_store((HV*)SvRV(object), "sv",  2, newSViv(PTR2IV(object)), 0);
 
 const char *
 sysroot_dir(self, ...)
@@ -84,11 +79,15 @@ buildroot_dir(self, ...)
 
 
 void
-DESTROY(self)
-    pkgconf_client_t *self
+DESTROY(...)
+  INIT:
+    pkgconf_client_t *self;
+    SV *object;
   CODE:
+    self = INT2PTR(pkgconf_client_t *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "ptr", 3, 0)));
+    object = INT2PTR(SV *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "sv", 2, 0)));
     pkgconf_client_free(self);
-
+    SvREFCNT_dec(object);
 
 IV
 _find(self, name, flags)

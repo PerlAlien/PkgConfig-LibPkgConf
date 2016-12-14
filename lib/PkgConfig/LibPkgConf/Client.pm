@@ -4,6 +4,15 @@ use strict;
 use warnings;
 use PkgConfig::LibPkgConf;
 
+sub new
+{
+  my $class = shift;
+  my $args = ref $_[0] eq 'HASH' ? shift : { @_ };
+  my $self = bless {}, $class;
+  _init($self, $args);
+  $self;
+}
+
 sub find
 {
   my($self, $name, $flags) = @_;
