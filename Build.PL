@@ -5,9 +5,13 @@ use Module::Build;
 sub try
 {
   my($flag, $package) = @_;
-  my $flags = `pkgconf $flag $package`;
+  # TODO: is it better to use --exists as a separate call
+  # or --silence-errors.  The latter seems to be supported
+  # by both pkg-config and pkgconf, but I am not sure for
+  # how far back.
+  my $flags = `pkgconf --silence-errors $flag $package`;
   return $flags unless $?;
-  $flags = `pkg-config $flag $package`;
+  $flags = `pkg-config --silence-errors $flag $package`;
   return $flags unless $?;
   die "unable to find pkgconf, pkg-config or $package";
 }
@@ -43,4 +47,5 @@ my $builder = Module::Build->new(
 );
 
 $builder->create_build_script;
+
 
