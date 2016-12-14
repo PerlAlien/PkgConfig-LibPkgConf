@@ -1,10 +1,10 @@
 language: perl
 
 install:
-  - cpanm --installdeps -n .
   - mkdir /tmp/pkgconf
   - git clone https://github.com/pkgconf/pkgconf.git /tmp/pkgconf/src
   - bash -c 'cd /tmp/pkgconf/src; ./autogen.sh && ./configure --prefix=/tmp/pkgconf --with-pic --disable-shared && make && make install'
+  - cpanm --installdeps -n -v .
 
 perl:
   - "5.8"
