@@ -32,7 +32,11 @@ IRC #native on irc.perl.org
 
 Project GitHub tracker:
 
-L<https://github.com/plicease/PkgConfig-LibPkgConf>
+L<https://github.com/plicease/PkgConfig-LibPkgConf/issues>
+
+If you want to contribute, please open a pull request on GitHub:
+
+L<https://github.com/plicease/PkgConfig-LibPkgConf/pulls>
 
 =head1 SEE ALSO
 

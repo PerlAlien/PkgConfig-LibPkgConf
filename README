@@ -16,7 +16,11 @@ SUPPORT
 
     Project GitHub tracker:
 
-    <https://github.com/plicease/PkgConfig-LibPkgConf>
+    <https://github.com/plicease/PkgConfig-LibPkgConf/issues>
+
+    If you want to contribute, please open a pull request on GitHub:
+
+    <https://github.com/plicease/PkgConfig-LibPkgConf/pulls>
 
 SEE ALSO
     The best entry point to the low level "pkgconf" interface can be found
