@@ -1,5 +1,6 @@
 .travis.yml
 Build.PL
+Changes
 corpus/lib1/foo.pc
 lib/PkgConfig/LibPkgConf.pm
 lib/PkgConfig/LibPkgConf.xs
@@ -7,9 +8,11 @@ lib/PkgConfig/LibPkgConf/Client.pm
 lib/PkgConfig/LibPkgConf/Package.pm
 lib/PkgConfig/LibPkgConf/Test.pm
 lib/PkgConfig/LibPkgConf/Util.pm
+maint/releaseprep
 MANIFEST			This list of files
 META.json
 META.yml
+README
 t/01_use.t
 t/client.t
 t/package.t

@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use autodie qw( :all );
+use App::RewriteVersion;
+
+my $version = shift @ARGV;
+
+if($version)
+{
+  # update the version number in all modules
+  {
+    my $rewrite = App::RewriteVersion->new;
+    $rewrite->allow_decimal_underscore(1);
+    $rewrite->verbose(1);
+    $rewrite->rewrite_versions($version);
+  }
+  
+  # update the Changes file
+  {
+  }
+}
+
+system "pod2text lib/PkgConfig/LibPkgConf.pm > README";
+

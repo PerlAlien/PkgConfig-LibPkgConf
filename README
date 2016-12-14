@@ -1,0 +1,58 @@
+NAME
+    PkgConfig::LibPkgConf - Interface to .pc file interface via libpkgconf
+
+SYNOPSIS
+     use PkgConfig::LibPkgConf;
+
+DESCRIPTION
+    Many libraries in compiled languages such as C or C++ provide ".pc"
+    files to specify the flags required for compiling and linking against
+    those libraries. Traditionally, the command line program "pkg-config" is
+    used to query these files. This module provides a Perl level API using
+    "libpkgconf" to these files.
+
+SUPPORT
+    IRC #native on irc.perl.org
+
+    Project GitHub tracker:
+
+    <https://github.com/plicease/PkgConfig-LibPkgConf>
+
+SEE ALSO
+    The best entry point to the low level "pkgconf" interface can be found
+    via PkgConfig::LibPkgConf::Client.
+
+    Alternatives include:
+
+    PkgConfig
+        Pure Perl implementation of "pkg-config" which can be used from the
+        command line, or as an API from Perl. Does not require pkg-config in
+        your path, so is a safe dependency for CPAN modules.
+
+    ExtUtils::PkgConfig
+        Wrapper for the "pkg-config" command line interface. This module
+        will fail to install if "pkg-config" cannot be found in the "PATH",
+        so it is not safe to use a dependency if you want your CPAN module
+        to work on platforms where "pkg-config" is not installed.
+
+    Alien::Base
+        Provides tools for building non-Perl libraries and making them
+        dependencies for your CPAN modules, even on platforms where the
+        non-Perl libraries aren't arelady installed. Includes hooks for
+        probing "pkg-config" ".pc" files using either "pkg-config" or
+        PkgConfig.
+
+ACKNOWLEDGMENTS
+    Thanks to the "pkgconf" developers for their efforts:
+
+    <https://github.com/pkgconf/pkgconf/graphs/contributors>
+
+AUTHOR
+    Graham Ollis
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2016 Graham Ollis.
+
+    This is free software; you may redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+
