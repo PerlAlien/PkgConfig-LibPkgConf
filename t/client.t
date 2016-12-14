@@ -77,4 +77,16 @@ subtest 'find' => sub {
 
 };
 
+subtest 'error' => sub {
+
+  plan skip_all => 'borked';
+
+  use PkgConfig::LibPkgConf::Test qw( send_error );
+  
+  my $client = PkgConfig::LibPkgConf::Client->new;
+  send_error($client, "this is an error sent");
+
+  ok 1;
+};
+
 done_testing;

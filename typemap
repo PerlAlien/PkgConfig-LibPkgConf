@@ -4,7 +4,7 @@ pkgconf_pkg_t*    T_PKGCONF_PKG
 INPUT
 T_PKGCONF_CLIENT
   if(sv_isobject($arg) && sv_derived_from($arg, \"PkgConfig::LibPkgConf::Client\"))
-    $var = INT2PTR($type, SvIV((SV*) SvRV($arg)));
+    $var = INT2PTR($type, SvIV(   *hv_fetch((HV*)SvRV($arg), \"ptr\", 3, 0)    ));
   else
     Perl_croak(aTHX_ \"$var is not of type PkgConfig::LibPkgConf::Client\");
 

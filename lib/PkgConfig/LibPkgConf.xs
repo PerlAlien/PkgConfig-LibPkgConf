@@ -5,30 +5,54 @@
 #include <libpkgconf/libpkgconf.h>
 
 static bool
-my_error_handler(const char *msg, pkgconf_client_t *client, void *data)
+my_error_handler(const char *msg, const pkgconf_client_t *client, const void *data)
 {
-  warn(msg);
-  return 1;
+  dSP;
+
+  int count;
+  bool value;
+  const char *class;
+    
+  ENTER;
+  SAVETMPS;
+  
+  PUSHMARK(SP);
+  EXTEND(SP, 2);
+  PUSHs((SV*)data); /* TODO: this no work */
+  PUSHs(sv_2mortal(newSVpv(msg, 0)));
+  PUTBACK;
+  
+  count = call_pv("PkgConfig::LibPkgConf::Client::error", G_SCALAR);
+  
+  SPAGAIN;
+  
+  value = count > 0 && POPi;
+  
+  PUTBACK;
+  FREETMPS;
+  LEAVE;
+
+  return value;
 }
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
-IV
-_new()
+SV *
+new(class)
+    const char *class
   INIT:
+    HV *hv;
+    SV *sv;
     const char *logfile;
     FILE *logfile_fp;
     pkgconf_client_t *self;
   CODE:
-    self = pkgconf_client_new(my_error_handler, NULL);
-    logfile = getenv("PKG_CONFIG_LOG");
-    if(logfile != NULL)
-    {
-      logfile_fp = fopen(logfile, "w");
-      pkgconf_audit_set_log(self, logfile_fp);
-    }
+    hv = newHV();
+    RETVAL = sv = sv_bless(newRV_noinc((SV*)hv), gv_stashpv( class, 0 ));
+    self = pkgconf_client_new(my_error_handler, sv);
     pkgconf_pkg_dir_list_build(self, 0);
-    RETVAL = PTR2IV(self);
+    hv_store(hv, "ptr", 3, newSViv(PTR2IV(self)), 0);
+    
   OUTPUT:
     RETVAL
 
@@ -246,3 +270,17 @@ compare_version(a,b)
     RETVAL = pkgconf_compare_version(a,b);
   OUTPUT:
     RETVAL
+
+
+MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Test
+
+
+IV
+send_error(client, msg)
+    pkgconf_client_t *client
+    const char *msg
+  CODE:
+    RETVAL = pkgconf_error(client, "%s", msg);
+  OUTPUT:
+    RETVAL
+  
