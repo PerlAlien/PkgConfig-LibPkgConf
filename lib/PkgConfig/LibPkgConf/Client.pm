@@ -9,7 +9,7 @@ our $VERSION = '0.01';
 sub new
 {
   my $class = shift;
-  my $args = ref $_[0] eq 'HASH' ? { %$_[0] } : { @_ };
+  my $args = ref $_[0] eq 'HASH' ? { %{$_[0]} } : { @_ };
   my $self = bless {}, $class;
   _init($self, $args);
   $self;
