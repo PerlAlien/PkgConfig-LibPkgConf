@@ -8,4 +8,62 @@ use PkgConfig::LibPkgConf;
 our $VERSION = '0.01';
 our @EXPORT_OK = qw( argv_split compare_version );
 
+=head1 NAME
+
+PkgConfig::LibPkgConf::Util - Non OO functions for PkgConfig::LibPkgConf
+
+=head1 SYNOPSIS
+
+ use PkgConfig::LibPkgConf::Util qw( argv_split compare_version );
+ 
+ my @args = argv_split('-L/foo -lfoo'); # ('-L/foo', '-lfoo');
+ my $cmp  = compare_version('1.2.3','1.2.4');
+
+=head1 DESCRIPTION
+
+This module provides some useful utility functions that come along with
+C<libpkgconf>, but are not object oriented and thus do not get their own
+class.
+
+=head1 FUNCTIONS
+
+=head2 argv_split
+
+TODO
+
+=head2 compare_version
+
+TODO
+
+=head1 SUPPORT
+
+IRC #native on irc.perl.org
+
+Project GitHub tracker:
+
+L<https://github.com/plicease/PkgConfig-LibPkgConf/issues>
+
+If you want to contribute, please open a pull request on GitHub:
+
+L<https://github.com/plicease/PkgConfig-LibPkgConf/pulls>
+
+=head1 SEE ALSO
+
+For additional related modules, see L<PkgConfig::LibPkgConf>
+
+=head1 AUTHOR
+
+Graham Ollis
+
+For additional contributors see L<PkgConfig::LibPkgConf>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2016 Graham Ollis.
+
+This is free software; you may redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
 1;
