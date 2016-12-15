@@ -116,7 +116,14 @@ sub find
   # TODO: probably want to come up with a more Perlish interface for flags.
   my($self, $name, $flags) = @_;
   my $ptr = _find($self, $name, $flags||0);
-  $ptr ? bless { client => $self, name => $name, ptr => $ptr }, 'PkgConfig::LibPkgConf::Package' : ();
+  $ptr ? do {
+    require PkgConfig::LibPkgConf::Package;
+    bless {
+      client => $self,
+      name   => $name,
+      ptr    => $ptr,
+    }, 'PkgConfig::LibPkgConf::Package';
+  } : ();
 }
 
 =head2 error
