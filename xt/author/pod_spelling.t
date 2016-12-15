@@ -12,3 +12,7 @@ Ollis
 awilfox
 libpkgconf
 pc
+TODO
+env
+buildroot
+sysroot
