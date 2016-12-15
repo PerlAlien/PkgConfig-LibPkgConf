@@ -64,7 +64,7 @@ platforms where C<pkg-config> is not installed.
 
 Provides tools for building non-Perl libraries and making them 
 dependencies for your CPAN modules, even on platforms where the non-Perl 
-libraries aren't arelady installed.  Includes hooks for probing 
+libraries aren't already installed.  Includes hooks for probing 
 C<pkg-config> C<.pc> files using either C<pkg-config> or L<PkgConfig>.
 
 =back

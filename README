@@ -42,7 +42,7 @@ SEE ALSO
     Alien::Base
         Provides tools for building non-Perl libraries and making them
         dependencies for your CPAN modules, even on platforms where the
-        non-Perl libraries aren't arelady installed. Includes hooks for
+        non-Perl libraries aren't already installed. Includes hooks for
         probing "pkg-config" ".pc" files using either "pkg-config" or
         PkgConfig.
 
