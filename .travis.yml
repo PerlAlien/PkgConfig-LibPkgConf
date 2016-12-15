@@ -21,7 +21,6 @@ script:
   - perl Build.PL
   - ./Build
   - ./Build test verbose=1
-  - prove -lvr xt
 
 env:
   - PKG_CONFIG_PATH=/tmp/pkgconf/lib/pkgconfig
