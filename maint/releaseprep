@@ -43,3 +43,4 @@ if($version)
 
 system "pod2text lib/PkgConfig/LibPkgConf.pm > README";
 
+system 'prove', '-lr', 'xt';

@@ -18,3 +18,10 @@ t/client.t
 t/package.t
 t/util.t
 typemap
+xt/author/eol.t
+xt/author/fixme.t
+xt/author/no_tabs.t
+xt/author/pod.t
+xt/author/pod_spelling.t
+xt/author/strict.t
+xt/author/version.t
