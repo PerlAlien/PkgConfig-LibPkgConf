@@ -79,6 +79,10 @@ L<https://github.com/pkgconf/pkgconf/graphs/contributors>
 
 Graham Ollis 
 
+Contributors:
+
+A. Wilcox (awilfox)
+
 =head1 COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2016 Graham Ollis.
