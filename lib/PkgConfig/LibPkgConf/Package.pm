@@ -6,4 +6,104 @@ use PkgConfig::LibPkgConf;
 
 our $VERSION = '0.01';
 
+=head1 NAME
+
+PkgConfig::LibPkgConf::Package - Represents a package
+
+=head1 SYNOPSIS
+
+ use PkgConfig::LibPkgConf::Client;
+ 
+ my $client = PkgConfig::LibPkgConf::Client->new;
+ $client->env;
+ 
+ my $pkg = $client->find('libarchive');
+ my $cflags = $pkg->cflags;
+ my $libs = $pkg->libs;
+
+=head1 DESCRIPTION
+
+The L<PkgConfig::LibPkgConf::Package> object stores package information.
+
+=head1 ATTRIBUTES
+
+=head2 refcount
+
+TODO
+
+=head2 id
+
+TODO
+
+=head2 filename
+
+TODO
+
+=head2 realname
+
+TODO
+
+=head2 version
+
+TODO
+
+=head2 description
+
+TODO
+
+=head2 url
+
+TODO
+
+=head2 pc_filedir
+
+TODO
+
+=head2 libs
+
+TODO
+
+=head2 libs_private
+
+TODO
+
+=head2 cflags
+
+TODO
+
+=head2 cflags_private
+
+TODO
+
+=head1 SUPPORT
+
+IRC #native on irc.perl.org
+
+Project GitHub tracker:
+
+L<https://github.com/plicease/PkgConfig-LibPkgConf/issues>
+
+If you want to contribute, please open a pull request on GitHub:
+
+L<https://github.com/plicease/PkgConfig-LibPkgConf/pulls>
+
+=head1 SEE ALSO
+
+For additional related modules, see L<PkgConfig::LibPkgConf>
+
+=head1 AUTHOR
+
+Graham Ollis
+
+For additional contributors see L<PkgConfig::LibPkgConf>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2016 Graham Ollis.
+
+This is free software; you may redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+ 
 1;
