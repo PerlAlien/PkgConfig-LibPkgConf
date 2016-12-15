@@ -4,7 +4,7 @@ install:
   - mkdir /tmp/pkgconf
   - git clone https://github.com/pkgconf/pkgconf.git /tmp/pkgconf/src
   - bash -c 'cd /tmp/pkgconf/src; ./autogen.sh && ./configure --prefix=/tmp/pkgconf --with-pic --disable-shared && make && make install'
-  - cpanm --installdeps -n -v .
+  - env PKG_CONFIG_PATH=/tmp/pkgconf/lib/pkgconfig cpanm --installdeps -n -v .
 
 perl:
   - "5.8"
@@ -18,9 +18,6 @@ perl:
   - "5.24"
   
 script:
-  - perl Build.PL
+  - env PKG_CONFIG_PATH=/tmp/pkgconf/lib/pkgconfig perl Build.PL
   - ./Build
   - ./Build test verbose=1
-
-env:
-  - PKG_CONFIG_PATH=/tmp/pkgconf/lib/pkgconfig
