@@ -113,9 +113,8 @@ not found returns C<undef>.
 
 sub find
 {
-  # TODO: probably want to come up with a more Perlish interface for flags.
-  my($self, $name, $flags) = @_;
-  my $ptr = _find($self, $name, $flags||0);
+  my($self, $name) = @_;
+  my $ptr = _find($self, $name);
   $ptr ? do {
     require PkgConfig::LibPkgConf::Package;
     bless {

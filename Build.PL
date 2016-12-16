@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Module::Build;
+use Config;
 
 sub try
 {
@@ -45,6 +46,23 @@ my $builder = Module::Build->new(
     },
   },
 );
+
+# This is not Platypus, but lets honor the debug env
+if($ENV{FFI_PLATYPUS_DEBUG})
+{
+  my $config = $builder->config;
+  foreach my $key (keys %Config)
+  {
+    my $value = $Config{$key};
+    next unless defined $value;
+    if($value =~ s/-O[0-9]?/-g3/g)
+    {
+      $builder->config($key, $value);
+      print "-$key = @{[ $config->{$key} ]}\n";
+      print "+$key = $value\n";
+    }
+  }
+}
 
 $builder->create_build_script;
 

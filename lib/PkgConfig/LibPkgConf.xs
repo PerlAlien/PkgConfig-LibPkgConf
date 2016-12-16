@@ -4,21 +4,31 @@
 
 #include <libpkgconf/libpkgconf.h>
 
+struct my_client_t {
+  pkgconf_client_t client;
+  FILE *auditf;
+  unsigned int flags;
+  SV *object;
+};
+
+typedef struct my_client_t my_client_t;
+
 static bool
-my_error_handler(const char *msg, const pkgconf_client_t *client, const void *data)
+my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
 {
   dSP;
 
   int count;
   bool value;
   const char *class;
+  const my_client_t *client = (const my_client_t*)data;
     
   ENTER;
   SAVETMPS;
   
   PUSHMARK(SP);
   EXTEND(SP, 2);
-  PUSHs((SV*)data);
+  PUSHs(client->object);
   PUSHs(sv_2mortal(newSVpv(msg, 0)));
   PUTBACK;
   
@@ -43,82 +53,85 @@ _init(object, args)
     SV *object
     SV *args
   INIT:
-    pkgconf_client_t *self;
+    my_client_t *self;
   CODE:
-    SvREFCNT_inc(object);
-    self = pkgconf_client_new(my_error_handler, object);
+    Newxz(self, 1, my_client_t);
+    self->auditf = NULL;
+    self->flags  = PKGCONF_PKG_PKGF_NONE;
+    self->object = SvREFCNT_inc(object);
+    pkgconf_client_init(&self->client, my_error_handler, self);
     /* TODO: this should be optional */
-    pkgconf_pkg_dir_list_build(self, 0);
+    pkgconf_pkg_dir_list_build(&self->client, 0);
     hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
-    hv_store((HV*)SvRV(object), "sv",  2, newSViv(PTR2IV(object)), 0);
 
 
 void
-audit_set_log(object, filename, mode)
-    SV *object
+audit_set_log(self, filename, mode)
+    my_client_t *self
     const char *filename
     const char *mode
-  INIT:
-    pkgconf_client_t *self;
-    FILE *fp;
   CODE:
-    self = INT2PTR(pkgconf_client_t *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "ptr", 3, 0)));
-    fp = fopen(filename, mode);
-    pkgconf_audit_set_log(self, fp);
-    hv_store((HV*)SvRV(object), "log", 3, newSViv(PTR2IV(fp)), 0);
-    
+    if(self->auditf != NULL)
+    {
+      fclose(self->auditf);
+      self->auditf = NULL;
+    }
+    self->auditf = fopen(filename, mode);
+    if(self->auditf != NULL)
+    {
+      pkgconf_audit_set_log(&self->client, self->auditf);
+    }
+    else
+    {
+      /* TODO: call error ? */
+    }
 
 
 const char *
 sysroot_dir(self, ...)
-    pkgconf_client_t *self
+    my_client_t *self
   CODE:
     if(items > 1)
     {
-      pkgconf_client_set_sysroot_dir(self, SvPV_nolen(ST(1)));
+      pkgconf_client_set_sysroot_dir(&self->client, SvPV_nolen(ST(1)));
     }
-    RETVAL = pkgconf_client_get_sysroot_dir(self);
+    RETVAL = pkgconf_client_get_sysroot_dir(&self->client);
   OUTPUT:
     RETVAL
 
 
 const char *
 buildroot_dir(self, ...)
-    pkgconf_client_t *self
+    my_client_t *self
   CODE:
     if(items > 1)
     {
-      pkgconf_client_set_buildroot_dir(self, SvPV_nolen(ST(1)));
+      pkgconf_client_set_buildroot_dir(&self->client, SvPV_nolen(ST(1)));
     }
-    RETVAL = pkgconf_client_get_buildroot_dir(self);
+    RETVAL = pkgconf_client_get_buildroot_dir(&self->client);
   OUTPUT:
     RETVAL
 
 
 void
-DESTROY(...)
-  INIT:
-    pkgconf_client_t *self;
-    SV *object;
-    FILE *fp;
+DESTROY(self)
+    my_client_t *self;
   CODE:
-    if(hv_exists( (HV*) SvRV(ST(0)), "log", 3))
+    if(self->auditf != NULL)
     {
-      fp = INT2PTR(FILE *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "log", 3, 0)));
-      fclose(fp);
+      fclose(self->auditf);
+      self->auditf = NULL;
     }
-    self = INT2PTR(pkgconf_client_t *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "ptr", 3, 0)));
-    object = INT2PTR(SV *, SvIV(*hv_fetch((HV*)SvRV(ST(0)), "sv", 2, 0)));
-    pkgconf_client_free(self);
-    SvREFCNT_dec(object);
+    pkgconf_client_deinit(&self->client);
+    SvREFCNT_dec(self->object);
+    Safefree(self);
 
 IV
-_find(self, name, flags)
-    pkgconf_client_t *self
+_find(self, name)
+    my_client_t *self
     const char *name
-    unsigned int flags
   CODE:
-    RETVAL = PTR2IV(pkgconf_pkg_find(self, name, flags));
+    RETVAL = PTR2IV(pkgconf_pkg_find(&self->client, name, self->flags));
   OUTPUT:
     RETVAL
     
@@ -286,9 +299,6 @@ compare_version(a,b)
     const char *a
     const char *b
   CODE:
-    /* TODO: this isn't documented yet, so make sure   **
-    **       that it is really part of the API before  **
-    **       exposing it.                              **/
     RETVAL = pkgconf_compare_version(a,b);
   OUTPUT:
     RETVAL
@@ -299,10 +309,10 @@ MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Test
 
 IV
 send_error(client, msg)
-    pkgconf_client_t *client
+    my_client_t *client
     const char *msg
   CODE:
-    RETVAL = pkgconf_error(client, "%s", msg);
+    RETVAL = pkgconf_error(&client->client, "%s", msg);
   OUTPUT:
     RETVAL
   

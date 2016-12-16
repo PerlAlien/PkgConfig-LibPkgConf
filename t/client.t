@@ -7,7 +7,6 @@ use PkgConfig::LibPkgConf::Client;
 subtest 'basic create and destroy' => sub {
 
   my $client = PkgConfig::LibPkgConf::Client->new;
-  $client->audit_set_log("test_audit.log", "a");
   isa_ok $client, 'PkgConfig::LibPkgConf::Client';
 
   my $sysroot = $client->sysroot_dir;
@@ -34,7 +33,6 @@ subtest 'basic create and destroy' => sub {
 subtest 'set sysroot' => sub {
 
   my $client = PkgConfig::LibPkgConf::Client->new;
-  $client->audit_set_log("test_audit.log", "a");
   
   my $dir = File::Temp::tempdir( CLEANUP => 1 );
   
@@ -46,7 +44,6 @@ subtest 'set sysroot' => sub {
 subtest 'set buildroot' => sub {
 
   my $client = PkgConfig::LibPkgConf::Client->new;
-  $client->audit_set_log("test_audit.log", "a");
   
   my $dir = File::Temp::tempdir( CLEANUP => 1 );
   
@@ -65,7 +62,6 @@ subtest 'subclass client' => sub {
   }
   
   my $client = MyClient->new;
-  $client->audit_set_log("test_audit.log", "a");
   
   isa_ok $client, 'MyClient';
   isa_ok $client, 'PkgConfig::LibPkgConf::Client';
@@ -77,9 +73,8 @@ subtest 'subclass client' => sub {
 
 subtest 'find' => sub {
 
-  $ENV{PKG_CONFIG_PATH} = 'corpus/lib1';
+  local $ENV{PKG_CONFIG_PATH} = 'corpus/lib1';
   my $client = PkgConfig::LibPkgConf::Client->new;
-  $client->audit_set_log("test_audit.log", "a");
 
   is( $client->find('completely-bogus-non-existent'), undef);
   
@@ -101,7 +96,6 @@ subtest 'error' => sub {
   };
   
   my $client = PkgConfig::LibPkgConf::Client->new;
-  $client->audit_set_log("test_audit.log", "a");
   send_error($client, "this is an error sent");
 
 };
@@ -128,7 +122,6 @@ subtest 'error in subclass' => sub {
   }
 
   my $client = MyClient2->new;
-  $client->audit_set_log("test_audit.log", "a");
   send_error($client, "this is an error sent2");
 
 };
