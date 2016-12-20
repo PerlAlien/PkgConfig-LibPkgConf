@@ -3,6 +3,7 @@ package PkgConfig::LibPkgConf::Client;
 use strict;
 use warnings;
 use PkgConfig::LibPkgConf;
+use Scalar::Util ();
 
 our $VERSION = '0.01';
 
@@ -41,7 +42,12 @@ sub new
   my $class = shift;
   my $args = ref $_[0] eq 'HASH' ? { %{$_[0]} } : { @_ };
   my $self = bless {}, $class;
-  _init($self, $args);
+  my $eh = do {
+    my $o = $self;
+    Scalar::Util::weaken($o);
+    sub { $o->error($_[0]) };
+  };
+  _init($self, $args, $eh);
   $self;
 }
 

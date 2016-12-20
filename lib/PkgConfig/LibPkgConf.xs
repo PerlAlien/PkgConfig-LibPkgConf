@@ -8,7 +8,7 @@ struct my_client_t {
   pkgconf_client_t client;
   FILE *auditf;
   unsigned int flags;
-  SV *object;
+  SV *error_handler;
 };
 
 typedef struct my_client_t my_client_t;
@@ -27,12 +27,11 @@ my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
   SAVETMPS;
   
   PUSHMARK(SP);
-  EXTEND(SP, 2);
-  PUSHs(client->object);
+  EXTEND(SP, 1);
   PUSHs(sv_2mortal(newSVpv(msg, 0)));
   PUTBACK;
   
-  count = call_method("error", G_SCALAR);
+  count = call_sv(client->error_handler, G_SCALAR);
   
   SPAGAIN;
   
@@ -49,16 +48,17 @@ MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
 void
-_init(object, args)
+_init(object, args, error_handler)
     SV *object
     SV *args
+    SV *error_handler;
   INIT:
     my_client_t *self;
   CODE:
     Newxz(self, 1, my_client_t);
     self->auditf = NULL;
     self->flags  = PKGCONF_PKG_PKGF_NONE;
-    self->object = SvREFCNT_inc(object);
+    self->error_handler = SvREFCNT_inc(error_handler);
     pkgconf_client_init(&self->client, my_error_handler, self);
     /* TODO: this should be optional */
     pkgconf_pkg_dir_list_build(&self->client, 0);
@@ -123,7 +123,7 @@ DESTROY(self)
       self->auditf = NULL;
     }
     pkgconf_client_deinit(&self->client);
-    SvREFCNT_dec(self->object);
+    SvREFCNT_dec(self->error_handler);
     Safefree(self);
 
 IV
@@ -316,3 +316,11 @@ send_error(client, msg)
   OUTPUT:
     RETVAL
   
+
+void
+send_log(client, msg)
+    my_client_t *client
+    const char *msg
+  CODE:
+    pkgconf_audit_log(&client->client, "%s", msg);
+

@@ -96,7 +96,8 @@ subtest 'error' => sub {
   };
   
   my $client = PkgConfig::LibPkgConf::Client->new;
-  send_error($client, "this is an error sent");
+  eval { send_error($client, "this is an error sent") };
+  note "exception: $@" if $@;
 
 };
 
@@ -122,8 +123,30 @@ subtest 'error in subclass' => sub {
   }
 
   my $client = MyClient2->new;
-  send_error($client, "this is an error sent2");
+  eval { send_error($client, "this is an error sent2") };
+  note "exception: $@" if $@;
 
+};
+
+subtest 'audit log' => sub {
+
+  use PkgConfig::LibPkgConf::Test qw( send_log );
+
+  my $client = PkgConfig::LibPkgConf::Client->new;
+  $client->audit_set_log("test.log", "w");
+  
+  send_log $client, "line1\n";
+  send_log $client, "line2\n";
+  
+  undef $client;
+
+  open my $fh, '<', 'test.log';
+  my $data = do { local $/; <$fh> };
+  close $fh;
+  
+  note "[data]$data\n";
+  ok $data;
+  
 };
 
 done_testing;
