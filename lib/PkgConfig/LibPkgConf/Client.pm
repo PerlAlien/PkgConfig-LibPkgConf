@@ -81,6 +81,10 @@ following list of environment variables:
 
 =item PKG_CONFIG_LOG
 
+=item PKG_CONFIG_TOP_BUILD_DIR
+
+=item PKG_CONFIG_SYSROOT_DIR
+
 =back
 
 =cut
@@ -95,8 +99,6 @@ following list of environment variables:
 # PKG_CONFIG_DISABLE_UNINSTALLED
 # PKG_CONFIG_ALLOW_SYSTEM_CFLAGS
 # PKG_CONFIG_ALLOW_SYSTEM_LIBS
-# PKG_CONFIG_TOP_BUILD_DIR
-# PKG_CONFIG_SYSROOT_DIR
 
 sub env
 {
@@ -104,7 +106,15 @@ sub env
   if($ENV{PKG_CONFIG_LOG})
   {
     $self->audit_set_log($ENV{PKG_CONFIG_LOG}, "w");
-  } 
+  }
+  if(defined $ENV{PKG_CONFIG_TOP_BUILD_DIR})
+  {
+    $self->buildroot_dir($ENV{PKG_CONFIG_TOP_BUILD_DIR});
+  }
+  if(defined $ENV{PKG_CONFIG_SYSROOT_DIR})
+  {
+    $self->sysroot_dir($ENV{PKG_CONFIG_SYSROOT_DIR});
+  }
 }
 
 =head2 find
