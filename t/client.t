@@ -73,8 +73,7 @@ subtest 'subclass client' => sub {
 
 subtest 'find' => sub {
 
-  local $ENV{PKG_CONFIG_PATH} = 'corpus/lib1';
-  my $client = PkgConfig::LibPkgConf::Client->new;
+  my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
 
   is( $client->find('completely-bogus-non-existent'), undef);
   
@@ -147,6 +146,25 @@ subtest 'audit log' => sub {
   note "[data]$data\n";
   ok $data;
   
+};
+
+subtest 'scan all' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
+  
+  # er.  Just make sure.
+  is_deeply [$client->dir_list], [qw( corpus/lib1 )];
+  
+  my %p;
+  
+  $client->scan_all(sub {
+    my($client, $package) = @_;
+    $p{$package->id}++;
+    0;
+  });
+
+  is_deeply \%p, { foo => 1, foo1 => 1, foo1a => 1 };
+
 };
 
 done_testing;

@@ -20,7 +20,6 @@ my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
 
   int count;
   bool value;
-  const char *class;
   const my_client_t *client = (const my_client_t*)data;
     
   ENTER;
@@ -44,6 +43,36 @@ my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
   return value;
 }
 
+static bool
+my_pkg_iterator(const pkgconf_pkg_t *pkg, void *data)
+{
+  dSP;
+  
+  int count;
+  bool value;
+  SV *callback = (SV*)data;
+  
+  ENTER;
+  SAVETMPS;
+  
+  PUSHMARK(SP);
+  EXTEND(SP,1);
+  PUSHs(sv_2mortal(newSViv(PTR2IV(pkg))));
+  PUTBACK;
+  
+  count = call_sv(callback, G_SCALAR);
+  
+  SPAGAIN;
+  
+  value = count > 0 && POPi;
+  
+  PUTBACK;
+  FREETMPS;
+  LEAVE;
+  
+  return value;
+}
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
@@ -60,8 +89,6 @@ _init(object, args, error_handler)
     self->flags  = PKGCONF_PKG_PKGF_NONE;
     self->error_handler = SvREFCNT_inc(error_handler);
     pkgconf_client_init(&self->client, my_error_handler, self);
-    /* TODO: this should be optional */
-    pkgconf_pkg_dir_list_build(&self->client, 0);
     hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
 
 
@@ -114,7 +141,7 @@ buildroot_dir(self, ...)
 
 
 void
-dirlist(self)
+dir_list(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
@@ -151,7 +178,28 @@ _find(self, name)
     RETVAL = PTR2IV(pkgconf_pkg_find(&self->client, name, self->flags));
   OUTPUT:
     RETVAL
-    
+
+
+void
+_scan_all(self, sub)
+    my_client_t *self
+    SV* sub
+  CODE:
+    pkgconf_scan_all(&self->client, sub, my_pkg_iterator);
+        
+
+void
+_env(self)
+    my_client_t *self
+  CODE:
+    pkgconf_pkg_dir_list_build(&self->client, 0);
+
+
+void
+_dir_list_build(self)
+    my_client_t *self
+  CODE:
+    pkgconf_pkg_dir_list_build(&self->client, PKGCONF_PKG_PKGF_ENV_ONLY);
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Package
 

@@ -48,6 +48,11 @@ sub new
     sub { $o->error($_[0]) };
   };
   _init($self, $args, $eh);
+  if($args->{path})
+  {
+    local $ENV{PKG_CONFIG_PATH} = $args->{path};
+    $self->_dir_list_build;
+  }
   $self;
 }
 
@@ -79,6 +84,10 @@ following list of environment variables:
 
 =over 4
 
+=item PKG_CONFIG_PATH
+
+=item PKG_CONFIG_LIBDIR
+
 =item PKG_CONFIG_LOG
 
 =item PKG_CONFIG_TOP_BUILD_DIR
@@ -89,8 +98,6 @@ following list of environment variables:
 
 =cut
 
-# PKG_CONFIG_PATH
-# PKG_CONFIG_LIBDIR
 # PKG_CONFIG_SYSTEM_LIBRARY_PATH
 # PKG_CONFIG_SYSTEM_INCLUDE_PATH
 # PKG_CONFIG_DEBUG_SPEW
@@ -115,6 +122,9 @@ sub env
   {
     $self->sysroot_dir($ENV{PKG_CONFIG_SYSROOT_DIR});
   }
+  # This sets _PATH and _LIBDIR
+  $self->_env;
+  $self;
 }
 
 =head2 find
@@ -139,6 +149,38 @@ sub find
       ptr    => $ptr,
     }, 'PkgConfig::LibPkgConf::Package';
   } : ();
+}
+
+=head2 scan_all
+
+ $client->scan_all(sub {
+   my($client, $package) = @_;
+   ...
+   return $bool;
+ });
+
+Iterates through all packages and calls the given subroutine reference
+for each package.  C<$package> isa L<PkgConfig::LibPkgConf::Package>.
+The scan will continue so long as a non true value is returned
+(as C<$bool>).
+
+=cut
+
+sub scan_all
+{
+  my($self, $callback) = @_;
+
+  my $wrapper = sub {
+    my($ptr) = @_;
+    require PkgConfig::LibPkgConf::Package;
+    my $package = bless {
+      client => $self,
+      ptr    => $ptr,
+    }, 'PkgConfig::LibPkgConf::Package';
+    $callback->($self, $package);
+  };
+
+  $self->_scan_all($wrapper);
 }
 
 =head2 error
@@ -174,7 +216,7 @@ closed when the object falls out of scope.  Examples:
  $client->audit_set_log("audit.log", "a"); # append to existing file
  $client->audit_set_log("audit2.log", "w"); # new or replace file
 
-=head2 dirlist
+=head2 dir_list
 
 Returns the list of directories used for searching for C<.pc> files.
 

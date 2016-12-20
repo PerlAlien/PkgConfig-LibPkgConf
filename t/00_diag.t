@@ -8,7 +8,7 @@ diag '';
 diag '';
 
 diag "[pkg-config search path]";
-foreach my $dir (PkgConfig::LibPkgConf::Client->new->dirlist)
+foreach my $dir (PkgConfig::LibPkgConf::Client->new->env->dir_list)
 {
   diag $dir;
 }

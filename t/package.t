@@ -6,8 +6,7 @@ use PkgConfig::LibPkgConf::Client;
 
 subtest dump => sub {
 
-  local $ENV{PKG_CONFIG_PATH} = 'corpus/lib1';
-  my $client = PkgConfig::LibPkgConf::Client->new;
+  my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
 
   my $pkg = $client->find('foo');
   

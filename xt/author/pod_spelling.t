@@ -16,3 +16,7 @@ TODO
 env
 buildroot
 sysroot
+cflags
+libs
+realname
+refcount
