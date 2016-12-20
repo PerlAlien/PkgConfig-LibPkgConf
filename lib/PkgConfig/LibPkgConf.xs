@@ -114,6 +114,23 @@ buildroot_dir(self, ...)
 
 
 void
+dirlist(self)
+    my_client_t *self
+  INIT:
+    pkgconf_node_t *n;
+    pkgconf_pkg_t *pkg;
+    pkgconf_path_t *pnode;
+    int count = 0;
+  CODE:
+    PKGCONF_FOREACH_LIST_ENTRY(self->client.dir_list.head, n)
+    {
+      pnode = n->data;
+      ST(count++) = sv_2mortal(newSVpv(pnode->path, 0));
+    }
+    XSRETURN(count);
+    
+
+void
 DESTROY(self)
     my_client_t *self;
   CODE:

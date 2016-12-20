@@ -164,6 +164,10 @@ closed when the object falls out of scope.  Examples:
  $client->audit_set_log("audit.log", "a"); # append to existing file
  $client->audit_set_log("audit2.log", "w"); # new or replace file
 
+=head2 dirlist
+
+Returns the list of directories used for searching for C<.pc> files.
+
 =head1 SUPPORT
 
 IRC #native on irc.perl.org
