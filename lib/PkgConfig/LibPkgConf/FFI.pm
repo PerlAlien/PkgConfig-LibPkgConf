@@ -169,6 +169,28 @@ sub PkgConfig::LibPkgConf::Client::_dir_list_build
 ## PkgConfig::LibPkgConf::Package
 ##
 
+{
+  package PkgConfig::LibPkgConf::FFI::Package;
+  
+  use FFI::Platypus::Record;
+  
+  record_layout(qw(
+    int refcount
+    string id
+    string filename
+    string realname
+    string version
+    string description
+    string url
+    string pc_filedir
+    
+    opaque libs
+    opaque libs_private
+    opaque cflags
+    opaque cflags_private
+  ));
+}
+
 sub PkgConfig::LibPkgConf::Package::refcount       {}
 sub PkgConfig::LibPkgConf::Package::id             {}
 sub PkgConfig::LibPkgConf::Package::filename       {}
@@ -177,6 +199,9 @@ sub PkgConfig::LibPkgConf::Package::version        {}
 sub PkgConfig::LibPkgConf::Package::description    {}
 sub PkgConfig::LibPkgConf::Package::url            {}
 sub PkgConfig::LibPkgConf::Package::pc_filedir     {}
+
+$ffi->attach('pkgconf_fragment_render_len' => [ 'pkgconf_client_t' ] => 'size_t');
+$ffi->attach('pkgconf_fragment_render_buf' => [ 'pkgconf_client_t', 'opaque', 'size_t' ] => 'void' );
 
 sub PkgConfig::LibPkgConf::Package::libs           {}
 sub PkgConfig::LibPkgConf::Package::libs_private   {}
