@@ -192,7 +192,7 @@ void
 _env(self)
     my_client_t *self
   CODE:
-    pkgconf_pkg_dir_list_build(&self->client, 0);
+    pkgconf_pkg_dir_list_build(&self->client, PKGCONF_PKG_PKGF_NONE);
 
 
 void

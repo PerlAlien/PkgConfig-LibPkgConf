@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 our $VERSION = '0.01';
+our $impl = 'unloaded';
 
-require XSLoader;
-XSLoader::load('PkgConfig::LibPkgConf', $VERSION);
+require PkgConfig::LibPkgConf::XS;
 
 1;
 
