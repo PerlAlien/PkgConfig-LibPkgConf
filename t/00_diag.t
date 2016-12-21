@@ -9,6 +9,11 @@ diag '';
 
 if(PkgConfig::LibPkgConf::Client->can('dir_list'))
 {
+  # delete local $ENV{FOO} is the modern way to do this
+  # but apparently only works in Perl 5.12 or better.
+  local %ENV = %ENV;
+  delete $ENV{PKG_CONFIG_PATH};
+  delete $ENV{PKG_CONFIG_LIBDIR};
   diag "[pkg-config search path]";
   foreach my $dir (PkgConfig::LibPkgConf::Client->new->env->dir_list)
   {
