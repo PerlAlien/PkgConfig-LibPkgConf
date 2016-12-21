@@ -6,7 +6,14 @@ use warnings;
 our $VERSION = '0.01';
 our $impl = 'unloaded';
 
-require PkgConfig::LibPkgConf::XS;
+if(($ENV{PERL_PKGCONFIG_LIBPKGCONF}||'') eq 'ffi')
+{
+  require PkgConfig::LibPkgConf::FFI;
+}
+else
+{
+  require PkgConfig::LibPkgConf::XS;
+}
 
 1;
 
