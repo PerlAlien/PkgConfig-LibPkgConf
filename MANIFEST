@@ -12,6 +12,7 @@ lib/PkgConfig/LibPkgConf/Package.pm
 lib/PkgConfig/LibPkgConf/Test.pm
 lib/PkgConfig/LibPkgConf/Util.pm
 lib/PkgConfig/LibPkgConf/XS.pm
+maint/buildpkgconf
 maint/releaseprep
 MANIFEST			This list of files
 META.json
