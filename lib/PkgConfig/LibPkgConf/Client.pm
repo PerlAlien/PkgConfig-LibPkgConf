@@ -61,7 +61,7 @@ C<PKG_CONFIG_SYSTEM_INCLUDE_PATH>.
 
 =back
 
-environment variables:
+environment variables honored:
 
 =over 4
 
@@ -72,6 +72,10 @@ environment variables:
 =item PKG_CONFIG_SYSTEM_LIBRARY_PATH
 
 =item PKG_CONFIG_SYSTEM_INCLUDE_PATH
+
+=item PKG_CONFIG_ALLOW_SYSTEM_CFLAGS
+
+=item PKG_CONFIG_ALLOW_SYSTEM_LIBS
 
 =back
 
@@ -93,6 +97,16 @@ sub new
   my $path_cvt = sub {
     ref $_[0] ? join(__PACKAGE__->path_sep, @{$_[0]}) : $_[0];
   };
+  
+  if($ENV{PKG_CONFIG_ALLOW_SYSTEM_CFLAGS} && !defined $opts->{filter_include_dirs})
+  {
+    $opts->{filter_include_dirs} = [];
+  }
+  
+  if($ENV{PKG_CONFIG_ALLOW_SYSTEM_LIBS} && !defined $opts->{filter_lib_dirs})
+  {
+    $opts->{filter_lib_dirs} = [];
+  }
 
   local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->(delete $opts->{filter_lib_dirs}) if defined $opts->{filter_lib_dirs};
   local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->(delete $opts->{filter_include_dirs}) if defined $opts->{filter_include_dirs};
@@ -109,6 +123,15 @@ sub new
     $self->_dir_list_build(0);
   }
   
+  if(defined $ENV{PKG_CONFIG_TOP_BUILD_DIR})
+  {
+    $self->buildroot_dir($ENV{PKG_CONFIG_TOP_BUILD_DIR});
+  }
+  if(defined $ENV{PKG_CONFIG_SYSROOT_DIR})
+  {
+    $self->sysroot_dir($ENV{PKG_CONFIG_SYSROOT_DIR});
+  }
+
   foreach my $key (sort keys %$opts)
   {
     require Carp;
@@ -166,10 +189,6 @@ following list of environment variables:
 
 =item PKG_CONFIG_LOG
 
-=item PKG_CONFIG_TOP_BUILD_DIR
-
-=item PKG_CONFIG_SYSROOT_DIR
-
 =back
 
 =cut
@@ -178,8 +197,6 @@ following list of environment variables:
 # PKG_CONFIG_IGNORE_CONFLICTS
 # PKG_CONFIG_PURE_DEPGRAPH
 # PKG_CONFIG_DISABLE_UNINSTALLED
-# PKG_CONFIG_ALLOW_SYSTEM_CFLAGS
-# PKG_CONFIG_ALLOW_SYSTEM_LIBS
 
 sub env
 {
@@ -187,14 +204,6 @@ sub env
   if($ENV{PKG_CONFIG_LOG})
   {
     $self->audit_set_log($ENV{PKG_CONFIG_LOG}, "w");
-  }
-  if(defined $ENV{PKG_CONFIG_TOP_BUILD_DIR})
-  {
-    $self->buildroot_dir($ENV{PKG_CONFIG_TOP_BUILD_DIR});
-  }
-  if(defined $ENV{PKG_CONFIG_SYSROOT_DIR})
-  {
-    $self->sysroot_dir($ENV{PKG_CONFIG_SYSROOT_DIR});
   }
   $self;
 }
