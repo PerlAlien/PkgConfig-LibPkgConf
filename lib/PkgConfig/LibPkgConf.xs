@@ -223,17 +223,11 @@ _scan_all(self, sub)
         
 
 void
-_env(self)
+_dir_list_build(self, env_only)
     my_client_t *self
+    int env_only
   CODE:
-    pkgconf_pkg_dir_list_build(&self->client, PKGCONF_PKG_PKGF_NONE);
-
-
-void
-_dir_list_build(self)
-    my_client_t *self
-  CODE:
-    pkgconf_pkg_dir_list_build(&self->client, PKGCONF_PKG_PKGF_ENV_ONLY);
+    pkgconf_pkg_dir_list_build(&self->client, env_only ? PKGCONF_PKG_PKGF_ENV_ONLY : PKGCONF_PKG_PKGF_NONE);
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Package
 
