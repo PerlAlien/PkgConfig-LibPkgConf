@@ -2,7 +2,7 @@ package PkgConfig::LibPkgConf::Client;
 
 use strict;
 use warnings;
-use PkgConfig::LibPkgConf;
+use PkgConfig::LibPkgConf::XS;
 use Scalar::Util ();
 
 our $VERSION = '0.01';

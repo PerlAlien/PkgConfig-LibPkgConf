@@ -2,7 +2,7 @@ package PkgConfig::LibPkgConf::Package;
 
 use strict;
 use warnings;
-use PkgConfig::LibPkgConf;
+use PkgConfig::LibPkgConf::XS;
 
 our $VERSION = '0.01';
 
