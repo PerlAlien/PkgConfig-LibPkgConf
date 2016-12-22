@@ -6,7 +6,7 @@ use Config;
 sub try
 {
   my($flag, $package) = @_;
-  # TODO: is it better to use --exists as a separate call
+  # Question: is it better to use --exists as a separate call
   # or --silence-errors.  The latter seems to be supported
   # by both pkg-config and pkgconf, but I am not sure for
   # how far back.

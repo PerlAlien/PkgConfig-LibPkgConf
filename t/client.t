@@ -195,6 +195,9 @@ subtest 'path attributes' => sub {
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
       [qw( /foo/lib /bar/lib )];
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new(filter_lib_dirs => [qw( /trans/lib /formers/lib )])->filter_lib_dirs], 
+      [qw( /trans/lib /formers/lib )];
 
   };
 
@@ -205,6 +208,9 @@ subtest 'path attributes' => sub {
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
       [qw( /foo/include /bar/include )];
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new(filter_include_dirs => [qw( /trans/include /formers/include )])->filter_include_dirs], 
+      [qw( /trans/include /formers/include )];
 
   };
 

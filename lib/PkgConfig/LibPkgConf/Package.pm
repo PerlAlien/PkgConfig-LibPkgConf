@@ -45,15 +45,15 @@ TODO
 
 =head2 version
 
-TODO
+The version of the package.
 
 =head2 description
 
-TODO
+Description of the package.
 
 =head2 url
 
-TODO
+URL for the package.
 
 =head2 pc_filedir
 
@@ -61,7 +61,7 @@ TODO
 
 =head2 libs
 
-TODO
+Library flags.  This usually includes things like C<-L/foo/lib> and C<-lfoo>.
 
 =head2 libs_private
 
@@ -69,7 +69,7 @@ TODO
 
 =head2 cflags
 
-TODO
+Compiler flags.  This usually includes things like C<-I/foo/include> and C<-DFOO=1>.
 
 =head2 cflags_private
 

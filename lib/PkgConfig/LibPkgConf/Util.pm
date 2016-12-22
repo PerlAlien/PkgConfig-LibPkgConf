@@ -29,11 +29,15 @@ class.
 
 =head2 argv_split
 
-TODO
+Splits a string into an argument list.
 
 =head2 compare_version
 
-TODO
+ my $cmp = compare_version($version1, $version2);
+
+Compare versions using RPM version comparison rules as described in the LSB.
+Returns -1 if the first version is greater, 0 if both versions are equal,
+1 if the second version is greater.
 
 =head1 SUPPORT
 

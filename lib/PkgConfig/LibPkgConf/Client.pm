@@ -47,6 +47,18 @@ or as a list reference.  This will override the C<pkgconf> compiled
 in defaults and the environment variables for C<PKG_CONFIG_PATH> or
 C<PKG_CONFIG_LIBDIR>.
 
+=item filter_lib_dirs
+
+List of directories to filter for libraries.  This overrides the 
+C<pkgconf> compiled in default and environment variable for
+C<PKG_CONFIG_SYSTEM_LIBRARY_PATH>.
+
+=item filter_include_dirs
+
+List of directories to filter for include.  This overrides the 
+C<pkgconf> compiled in default and environment variable for
+C<PKG_CONFIG_SYSTEM_INCLUDE_PATH>.
+
 =back
 
 environment variables:
@@ -69,18 +81,23 @@ sub new
 {
   my $class = shift;
   my $opts = ref $_[0] eq 'HASH' ? { %{$_[0]} } : { @_ };
+
   my $self = bless {}, $class;
+
   my $eh = do {
     my $o = $self;
     Scalar::Util::weaken($o);
     sub { $o->error($_[0]) };
   };
 
-  _init($self, $opts, $eh);
-
   my $path_cvt = sub {
     ref $_[0] ? join(__PACKAGE__->path_sep, @{$_[0]}) : $_[0];
   };
+
+  local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->($opts->{filter_lib_dirs}) if $opts->{filter_lib_dirs};
+  local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->($opts->{filter_include_dirs}) if $opts->{filter_include_dirs};
+
+  _init($self, $opts, $eh);
 
   if($opts->{path})
   {
