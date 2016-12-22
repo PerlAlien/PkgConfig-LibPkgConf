@@ -64,6 +64,8 @@ if($ENV{FFI_PLATYPUS_DEBUG})
   }
 }
 
+$builder->add_to_cleanup( '*.log' );
+$builder->add_to_cleanup( '*.bak' );
 $builder->create_build_script;
 
 
