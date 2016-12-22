@@ -22,6 +22,7 @@ cd $MYTMP
   --with-pic \
   --with-pkg-config-dir=$MYPREFIX/lib/pkgconfig:/usr/local/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig \
   --with-system-libdir=$SYSTEM_LIBDIRS
+  --with-system-includedir=/usr/include
 
 make
 
