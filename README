@@ -3,6 +3,13 @@ NAME
 
 SYNOPSIS
      use PkgConfig::LibPkgConf;
+ 
+     if(pkgconf_exists('libarchive'))
+     {
+       my $version = pkgconf_version('libarchive');
+       my $cflags  = pkgconf_cflags('libarchive');
+       my $libs    = pkgconf_libs('libarchive');
+     }
 
 DESCRIPTION
     Many libraries in compiled languages such as C or C++ provide ".pc"
@@ -10,6 +17,46 @@ DESCRIPTION
     those libraries. Traditionally, the command line program "pkg-config" is
     used to query these files. This module provides a Perl level API using
     "libpkgconf" to these files.
+
+    This module provides a simplified interface for getting the existence,
+    version, cflags and library flags needed for compiling against a
+    package, using the default compiled in configuration of "pkgconf". For a
+    more powerful, but complicated interface see
+    PkgConfig::LibPkgConf::Client. In addition, PkgConfig::LibPkgConf::Util
+    provides some useful utility functions that are also provided by
+    "pkgconf".
+
+FUNCTIONS
+  pkgconf_exists
+     my $bool = pkgconf_exists $package_name;
+
+    Returns true if the package is available.
+
+    Exported by default.
+
+  pkgconf_version
+     my $version = pkgconf_version $package_name;
+
+    Returns the version of the package, if it exists. Will throw an
+    exception if not found.
+
+    Exported by default.
+
+  pkgconf_cflags
+     my $clfags = pkgconf_cflags $package_name;
+
+    Returns the compiler flags for the package, if it exists. Will throw an
+    exception if not found.
+
+    Exported by default.
+
+  pkgconf_libs
+     my $libs = pkgconf_libs $package_name;
+
+    Returns the linker library flags for the package, if it exists. Will
+    throw an exception if not found.
+
+    Exported by default.
 
 SUPPORT
     IRC #native on irc.perl.org

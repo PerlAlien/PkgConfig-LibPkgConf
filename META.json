@@ -44,6 +44,13 @@
          "file" : "lib/PkgConfig/LibPkgConf/Client.pm",
          "version" : "0.01"
       },
+      "PkgConfig::LibPkgConf::FFI" : {
+         "file" : "lib/PkgConfig/LibPkgConf/FFI.pm",
+         "version" : "0.01"
+      },
+      "PkgConfig::LibPkgConf::FFI::Package" : {
+         "file" : "lib/PkgConfig/LibPkgConf/FFI.pm"
+      },
       "PkgConfig::LibPkgConf::Package" : {
          "file" : "lib/PkgConfig/LibPkgConf/Package.pm",
          "version" : "0.01"
@@ -54,6 +61,10 @@
       },
       "PkgConfig::LibPkgConf::Util" : {
          "file" : "lib/PkgConfig/LibPkgConf/Util.pm",
+         "version" : "0.01"
+      },
+      "PkgConfig::LibPkgConf::XS" : {
+         "file" : "lib/PkgConfig/LibPkgConf/XS.pm",
          "version" : "0.01"
       }
    },
@@ -72,5 +83,5 @@
       "x_MailingList" : "https://groups.google.com/forum/#!forum/perl5-alien"
    },
    "version" : "0.01",
-   "x_serialization_backend" : "JSON::PP version 2.27400_01"
+   "x_serialization_backend" : "JSON::PP version 2.27400"
 }

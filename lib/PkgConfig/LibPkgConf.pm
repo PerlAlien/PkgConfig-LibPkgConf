@@ -2,20 +2,13 @@ package PkgConfig::LibPkgConf;
 
 use strict;
 use warnings;
+use base qw( Exporter );
 
 our $VERSION = '0.01';
 our $impl = 'unloaded';
+our @EXPORT = qw( pkgconf_cflags pkgconf_libs pkgconf_exists pkgconf_version );
 
-if(($ENV{PERL_PKGCONFIG_LIBPKGCONF}||'') eq 'ffi')
-{
-  require PkgConfig::LibPkgConf::FFI;
-}
-else
-{
-  require PkgConfig::LibPkgConf::XS;
-}
-
-1;
+require PkgConfig::LibPkgConf::XS;
 
 =head1 NAME
 
@@ -24,6 +17,13 @@ PkgConfig::LibPkgConf - Interface to .pc file interface via libpkgconf
 =head1 SYNOPSIS
 
  use PkgConfig::LibPkgConf;
+ 
+ if(pkgconf_exists('libarchive'))
+ {
+   my $version = pkgconf_version('libarchive');
+   my $cflags  = pkgconf_cflags('libarchive');
+   my $libs    = pkgconf_libs('libarchive');
+ }
 
 =head1 DESCRIPTION
 
@@ -32,6 +32,93 @@ files to specify the flags required for compiling and linking against
 those libraries.  Traditionally, the command line program C<pkg-config> 
 is used to query these files.  This module provides a Perl level API
 using C<libpkgconf> to these files.
+
+This module provides a simplified interface for getting the existence,
+version, cflags and library flags needed for compiling against a package,
+using the default compiled in configuration of C<pkgconf>.  For a more
+powerful, but complicated interface see L<PkgConfig::LibPkgConf::Client>.
+In addition, L<PkgConfig::LibPkgConf::Util> provides some useful utility
+functions that are also provided by C<pkgconf>.
+
+=head1 FUNCTIONS
+
+=head2 pkgconf_exists
+
+ my $bool = pkgconf_exists $package_name;
+
+Returns true if the package is available.
+
+Exported by default.
+
+=cut
+
+sub pkgconf_exists
+{
+  my $pkg = eval { _pkg($_[0]) };
+  return defined $pkg;
+}
+
+=head2 pkgconf_version
+
+ my $version = pkgconf_version $package_name;
+
+Returns the version of the package, if it exists.  Will throw an exception
+if not found.
+
+Exported by default.
+
+=cut
+
+sub pkgconf_version
+{
+  my $pkg = _pkg($_[0]);
+  $pkg->version;
+}
+
+=head2 pkgconf_cflags
+
+ my $clfags = pkgconf_cflags $package_name;
+
+Returns the compiler flags for the package, if it exists.  Will throw an
+exception if not found.
+
+Exported by default.
+
+=cut
+
+sub pkgconf_cflags
+{
+  my $pkg = _pkg($_[0]);
+  $pkg->cflags;
+}
+
+=head2 pkgconf_libs
+
+ my $libs = pkgconf_libs $package_name;
+
+Returns the linker library flags for the package, if it exists.  Will throw
+an exception if not found.
+
+Exported by default.
+
+=cut
+
+sub pkgconf_libs
+{
+  my $pkg = _pkg($_[0]);
+  $pkg->libs;
+}
+
+sub _pkg
+{
+  my($name) = @_;
+  require PkgConfig::LibPkgConf::Client;
+  my $pkg = PkgConfig::LibPkgConf::Client->new->find($name);
+  die "package $name not found" unless $pkg;
+  $pkg;
+}
+
+1;
 
 =head1 SUPPORT
 

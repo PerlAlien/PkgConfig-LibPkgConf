@@ -20,3 +20,4 @@ cflags
 libs
 realname
 refcount
+LSB

@@ -22,6 +22,7 @@ t/00_diag.t
 t/01_use.t
 t/client.t
 t/package.t
+t/simple.t
 t/util.t
 typemap
 xt/author/eol.t
