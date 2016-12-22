@@ -29,19 +29,19 @@ The L<PkgConfig::LibPkgConf::Package> object stores package information.
 
 =head2 refcount
 
-TODO
+Internal reference count used by C<pkgconf>.
 
 =head2 id
 
-TODO
+The id of the package.
 
 =head2 filename
 
-TODO
+The filename of the C<.pc> file.
 
 =head2 realname
 
-TODO
+The real name for the package.
 
 =head2 version
 
@@ -73,7 +73,7 @@ sub libs
 
 =head2 libs_private
 
-TODO
+Private library flags.
 
 =cut
 
@@ -97,7 +97,7 @@ sub cflags
 
 =head2 cflags_private
 
-TODO
+Private compiler flags.
 
 =cut
 
