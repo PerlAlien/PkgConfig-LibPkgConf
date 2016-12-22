@@ -4,6 +4,7 @@ Changes
 corpus/lib1/foo.pc
 corpus/lib1/foo1.pc
 corpus/lib1/foo1a.pc
+INSTALL
 lib/PkgConfig/LibPkgConf.pm
 lib/PkgConfig/LibPkgConf.xs
 lib/PkgConfig/LibPkgConf/Client.pm
@@ -12,6 +13,7 @@ lib/PkgConfig/LibPkgConf/Package.pm
 lib/PkgConfig/LibPkgConf/Test.pm
 lib/PkgConfig/LibPkgConf/Util.pm
 lib/PkgConfig/LibPkgConf/XS.pm
+LICENSE
 maint/buildpkgconf
 maint/releaseprep
 MANIFEST			This list of files
