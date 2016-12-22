@@ -73,6 +73,32 @@ my_pkg_iterator(const pkgconf_pkg_t *pkg, void *data)
   return value;
 }
 
+static bool
+filter_cflags(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
+{
+  if(pkgconf_fragment_has_system_dir(client, frag))
+    return false;
+  return true;
+}
+
+static bool
+filter_libs(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
+{
+  if(pkgconf_fragment_has_system_dir(client, frag))
+    return false;
+  return true;
+}
+
+#define fragment_to_sv(fragment, sv)                                     \
+    {                                                                    \
+      int len = pkgconf_fragment_render_len(fragment);                   \
+      sv = newSV(len == 1 ? len : len-1);                                \
+      SvPOK_on(sv);                                                      \
+      SvCUR_set(sv, len-1);                                              \
+      pkgconf_fragment_render_buf(fragment, SvPVX(sv), len);             \
+    }
+
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
@@ -310,18 +336,11 @@ pc_filedir(self)
   OUTPUT:
     RETVAL
 
-
 SV *
 libs(self)
     pkgconf_pkg_t* self
-  INIT:
-    int len;
   CODE:
-    len = pkgconf_fragment_render_len(&self->libs);
-    RETVAL = newSV(len == 1 ? len : len-1);
-    SvPOK_on(RETVAL);
-    SvCUR_set(RETVAL, len-1);
-    pkgconf_fragment_render_buf(&self->libs, SvPVX(RETVAL), len);
+    fragment_to_sv(&self->libs, RETVAL);
   OUTPUT:
     RETVAL
 
@@ -329,14 +348,8 @@ libs(self)
 SV *
 libs_private(self)
     pkgconf_pkg_t* self
-  INIT:
-    int len;
   CODE:
-    len = pkgconf_fragment_render_len(&self->libs_private);
-    RETVAL = newSV(len == 1 ? len : len-1);
-    SvPOK_on(RETVAL);
-    SvCUR_set(RETVAL, len-1);
-    pkgconf_fragment_render_buf(&self->libs_private, SvPVX(RETVAL), len);
+    fragment_to_sv(&self->libs_private, RETVAL);
   OUTPUT:
     RETVAL
 
@@ -344,14 +357,8 @@ libs_private(self)
 SV *
 cflags(self)
     pkgconf_pkg_t* self
-  INIT:
-    int len;
   CODE:
-    len = pkgconf_fragment_render_len(&self->cflags);
-    RETVAL = newSV(len == 1 ? len : len-1);
-    SvPOK_on(RETVAL);
-    SvCUR_set(RETVAL, len-1);
-    pkgconf_fragment_render_buf(&self->cflags, SvPVX(RETVAL), len);
+    fragment_to_sv(&self->cflags, RETVAL);
   OUTPUT:
     RETVAL
 
@@ -359,14 +366,8 @@ cflags(self)
 SV *
 cflags_private(self)
     pkgconf_pkg_t* self
-  INIT:
-    int len;
   CODE:
-    len = pkgconf_fragment_render_len(&self->cflags_private);
-    RETVAL = newSV(len == 1 ? len : len-1);
-    SvPOK_on(RETVAL);
-    SvCUR_set(RETVAL, len-1);
-    pkgconf_fragment_render_buf(&self->cflags_private, SvPVX(RETVAL), len);
+    fragment_to_sv(&self->cflags_private, RETVAL);
   OUTPUT:
     RETVAL
 
