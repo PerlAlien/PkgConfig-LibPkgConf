@@ -63,17 +63,49 @@ TODO
 
 Library flags.  This usually includes things like C<-L/foo/lib> and C<-lfoo>.
 
+=cut
+
+sub libs
+{
+  my($self) = @_;
+  $self->_libs($self->{client});
+}
+
 =head2 libs_private
 
 TODO
+
+=cut
+
+sub libs_private
+{
+  my($self) = @_;
+  $self->_libs_private($self->{client});
+}
 
 =head2 cflags
 
 Compiler flags.  This usually includes things like C<-I/foo/include> and C<-DFOO=1>.
 
+=cut
+
+sub cflags
+{
+  my($self) = @_;
+  $self->_cflags($self->{client});
+}
+
 =head2 cflags_private
 
 TODO
+
+=cut
+
+sub cflags_private
+{
+  my($self) = @_;
+  $self->_cflags_private($self->{client});
+}
 
 =head1 SUPPORT
 

@@ -89,13 +89,17 @@ filter_libs(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsi
   return true;
 }
 
-#define fragment_to_sv(fragment, sv)                                     \
-    {                                                                    \
-      int len = pkgconf_fragment_render_len(fragment);                   \
-      sv = newSV(len == 1 ? len : len-1);                                \
-      SvPOK_on(sv);                                                      \
-      SvCUR_set(sv, len-1);                                              \
-      pkgconf_fragment_render_buf(fragment, SvPVX(sv), len);             \
+#define fragment_to_sv(fragment, sv, filter)                                                              \
+    {                                                                                                     \
+      pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;                                            \
+      int len;                                                                                            \
+                                                                                                          \
+      pkgconf_fragment_filter(&client->client, &filtered_list, fragment, filter, client->flags);          \
+      len = pkgconf_fragment_render_len(&filtered_list);                                                  \
+      sv = newSV(len == 1 ? len : len-1);                                                                 \
+      SvPOK_on(sv);                                                                                       \
+      SvCUR_set(sv, len-1);                                                                               \
+      pkgconf_fragment_render_buf(&filtered_list, SvPVX(sv), len);                                        \
     }
 
 
@@ -337,37 +341,41 @@ pc_filedir(self)
     RETVAL
 
 SV *
-libs(self)
+_libs(self, client)
     pkgconf_pkg_t* self
+    my_client_t *client
   CODE:
-    fragment_to_sv(&self->libs, RETVAL);
+    fragment_to_sv(&self->libs, RETVAL, filter_libs);
   OUTPUT:
     RETVAL
 
 
 SV *
-libs_private(self)
+_libs_private(self, client)
     pkgconf_pkg_t* self
+    my_client_t *client
   CODE:
-    fragment_to_sv(&self->libs_private, RETVAL);
+    fragment_to_sv(&self->libs_private, RETVAL, filter_libs);
   OUTPUT:
     RETVAL
 
 
 SV *
-cflags(self)
+_cflags(self, client)
     pkgconf_pkg_t* self
+    my_client_t *client
   CODE:
-    fragment_to_sv(&self->cflags, RETVAL);
+    fragment_to_sv(&self->cflags, RETVAL, filter_cflags);
   OUTPUT:
     RETVAL
 
 
 SV *
-cflags_private(self)
+_cflags_private(self, client)
     pkgconf_pkg_t* self
+    my_client_t *client
   CODE:
-    fragment_to_sv(&self->cflags_private, RETVAL);
+    fragment_to_sv(&self->cflags_private, RETVAL, filter_cflags);
   OUTPUT:
     RETVAL
 

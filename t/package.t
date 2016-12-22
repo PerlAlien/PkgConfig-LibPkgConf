@@ -4,9 +4,13 @@ use Test::More;
 use PkgConfig::LibPkgConf::Package;
 use PkgConfig::LibPkgConf::Client;
 
-subtest dump => sub {
+subtest 'dump' => sub {
 
-  my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
+  my $client = PkgConfig::LibPkgConf::Client->new(
+    path => [ 'corpus/lib1' ],
+    filter_lib_dirs => [],
+    filter_include_dirs => [],
+  );
 
   my $pkg = $client->find('foo');
   
@@ -38,6 +42,21 @@ subtest dump => sub {
   is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
   is $pkg->cflags_private, '-DFOO_STATIC ', 'cflags_private';
   
+};
+
+subtest 'filte sys' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new(
+    path => [ 'corpus/lib1' ],
+    filter_lib_dirs => [ '/test/lib' ],
+    filter_include_dirs => [ '/test/include/foo' ],
+  );
+  
+  my $pkg = $client->find('foo');
+
+  is $pkg->libs,   '-lfoo ', 'libs';  
+  is $pkg->cflags, '-fPIC ', 'cflags';
+
 };
 
 done_testing;

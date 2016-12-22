@@ -94,19 +94,25 @@ sub new
     ref $_[0] ? join(__PACKAGE__->path_sep, @{$_[0]}) : $_[0];
   };
 
-  local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->($opts->{filter_lib_dirs}) if $opts->{filter_lib_dirs};
-  local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->($opts->{filter_include_dirs}) if $opts->{filter_include_dirs};
+  local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->(delete $opts->{filter_lib_dirs}) if defined $opts->{filter_lib_dirs};
+  local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->(delete $opts->{filter_include_dirs}) if defined $opts->{filter_include_dirs};
 
   _init($self, $opts, $eh);
 
   if($opts->{path})
   {
-    local $ENV{PKG_CONFIG_PATH} = $path_cvt->($opts->{path});
+    local $ENV{PKG_CONFIG_PATH} = $path_cvt->(delete $opts->{path});
     $self->_dir_list_build(1);
   }
   else
   {
     $self->_dir_list_build(0);
+  }
+  
+  foreach my $key (sort keys %$opts)
+  {
+    require Carp;
+    Carp::carp("Unused unknown option $key");
   }
 
   $self;
