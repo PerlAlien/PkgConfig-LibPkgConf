@@ -141,7 +141,7 @@ buildroot_dir(self, ...)
 
 
 void
-dir_list(self)
+path(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
@@ -158,7 +158,7 @@ dir_list(self)
 
 
 void
-filter_libdirs(self)
+filter_lib_dirs(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
@@ -175,7 +175,7 @@ filter_libdirs(self)
 
 
 void
-filter_includedirs(self)
+filter_include_dirs(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
@@ -190,6 +190,14 @@ filter_includedirs(self)
     }
     XSRETURN(count);    
 
+
+char *
+path_sep(class)
+    SV *class
+  CODE:
+    RETVAL = PKG_CONFIG_PATH_SEP_S;
+  OUTPUT:
+    RETVAL
 
 void
 DESTROY(self)

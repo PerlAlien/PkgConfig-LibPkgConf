@@ -34,20 +34,22 @@ for C<libpkgconf> allowing for multiple instances to run in parallel.
  my $client = PkgConfig::LibPkgConf::Client->new(%opts);
  my $client = PkgConfig::LibPkgConf::Client->new(\%opts);
 
-Creates an instance of L<PkgConfig::LibPkgConf::Client>.  These are
-recognized options:
+Creates an instance of L<PkgConfig::LibPkgConf::Client>.  Possible 
+options include:
 
 =over 4
 
 =item path
 
-The search path to look for C<.pc> files.  This will override the
-C<pkgconf> compiled in defaults and the environment variables for
-C<PKG_CONFIG_PATH> or C<PKG_CONFIG_LIBDIR>.
+The search path to look for C<.pc> files.  This may be specified
+either as a string with the appropriate path separator character,
+or as a list reference.  This will override the C<pkgconf> compiled
+in defaults and the environment variables for C<PKG_CONFIG_PATH> or
+C<PKG_CONFIG_LIBDIR>.
 
 =back
 
-Honors these environment variables:
+environment variables:
 
 =over 4
 
@@ -76,9 +78,13 @@ sub new
 
   _init($self, $opts, $eh);
 
+  my $path_cvt = sub {
+    ref $_[0] ? join(__PACKAGE__->path_sep, @{$_[0]}) : $_[0];
+  };
+
   if($opts->{path})
   {
-    local $ENV{PKG_CONFIG_PATH} = $opts->{path};
+    local $ENV{PKG_CONFIG_PATH} = $path_cvt->($opts->{path});
     $self->_dir_list_build(1);
   }
   else
@@ -90,6 +96,24 @@ sub new
 }
 
 =head1 ATTRIBUTES
+
+=head2 path
+
+ my @path = $client->path;
+
+The search path to look for C<.pc> files.
+
+=head2 filter_lib_dirs
+
+ my @dirs = $client->filter_lib_dirs;
+
+List of directories to filter for libraries.
+
+=head2 filter_include_dirs
+
+ my @dirs = $client->filter_include_dirs;
+
+List of directories to filter for includes.
 
 =head2 sysroot_dir
 
@@ -241,9 +265,12 @@ closed when the object falls out of scope.  Examples:
  $client->audit_set_log("audit.log", "a"); # append to existing file
  $client->audit_set_log("audit2.log", "w"); # new or replace file
 
-=head2 dir_list
+=head2 path_sep
 
-Returns the list of directories used for searching for C<.pc> files.
+ my $sep = PkgConfig::LibPkgConf::Client->path_sep;
+
+Returns the path separator as understood by C<pkgconf>.  This is usually
+C<:> on UNIX and C<;> on Windows.
 
 =head1 SUPPORT
 

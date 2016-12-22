@@ -153,7 +153,7 @@ subtest 'scan all' => sub {
   my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
   
   # er.  Just make sure.
-  is_deeply [$client->dir_list], [qw( corpus/lib1 )] if $client->can('dir_list');
+  is_deeply [$client->path], [qw( corpus/lib1 )] if $client->can('path');
   
   my %p;
   
@@ -164,6 +164,49 @@ subtest 'scan all' => sub {
   });
 
   is_deeply \%p, { foo => 1, foo1 => 1, foo1a => 1 };
+
+};
+
+subtest 'path attributes' => sub {
+
+  my $sep = PkgConfig::LibPkgConf::Client->path_sep;
+
+  subtest 'search path' => sub {
+  
+    local $ENV{PKG_CONFIG_PATH} = join $sep, '/foo', '/bar';
+    local $ENV{PKG_CONFIG_LIBDIR} = join $sep, '/baz', '/ralph';
+
+    is_deeply 
+      [PkgConfig::LibPkgConf::Client->new->path], 
+      [qw( /foo /bar /baz /ralph )];
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new(path => join($sep, qw( /trans /formers )))->path], 
+      [qw( /trans /formers )];
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new(path => [qw( /trans /formers )])->path], 
+      [qw( /trans /formers )];
+  
+  };
+  
+  subtest 'filter lib dirs' => sub {
+
+    local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = join $sep, '/foo/lib', '/bar/lib';
+
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
+      [qw( /foo/lib /bar/lib )];
+
+  };
+
+  subtest 'filter include dirs' => sub {
+
+    local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = join $sep, '/foo/include', '/bar/include';
+
+    is_deeply
+      [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
+      [qw( /foo/include /bar/include )];
+
+  };
 
 };
 

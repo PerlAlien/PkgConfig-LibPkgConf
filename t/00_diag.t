@@ -7,7 +7,7 @@ diag '';
 diag '';
 diag '';
 
-foreach my $method (qw( dir_list filter_libdirs filter_includedirs ))
+foreach my $method (qw( path filter_lib_dirs filter_include_dirs ))
 {
   if(PkgConfig::LibPkgConf::Client->can($method))
   {
@@ -26,7 +26,6 @@ foreach my $method (qw( dir_list filter_libdirs filter_includedirs ))
     }
 
     diag '';
-    diag '';
   }
 }
 
@@ -34,6 +33,10 @@ diag '[impl]';
 diag $PkgConfig::LibPkgConf::impl;
 
 diag '';
+
+diag '[path_sep]';
+diag(PkgConfig::LibPkgConf::Client->path_sep);
+
 diag '';
 diag '';
 
