@@ -7,21 +7,27 @@ diag '';
 diag '';
 diag '';
 
-if(PkgConfig::LibPkgConf::Client->can('dir_list'))
+foreach my $method (qw( dir_list filter_libdirs filter_includedirs ))
 {
-  # delete local $ENV{FOO} is the modern way to do this
-  # but apparently only works in Perl 5.12 or better.
-  local %ENV = %ENV;
-  delete $ENV{PKG_CONFIG_PATH};
-  delete $ENV{PKG_CONFIG_LIBDIR};
-  diag "[pkg-config search path]";
-  foreach my $dir (PkgConfig::LibPkgConf::Client->new->env->dir_list)
+  if(PkgConfig::LibPkgConf::Client->can($method))
   {
-    diag $dir;
-  }
+    # delete local $ENV{FOO} is the modern way to do this
+    # but apparently only works in Perl 5.12 or better.
+    local %ENV = %ENV;
+    delete $ENV{$_} 
+      for qw( PKG_CONFIG_PATH 
+              PKG_CONFIG_LIBDIR 
+              PKG_CONFIG_SYSTEM_LIBRARY_PATH 
+              PKG_CONFIG_SYSTEM_INCLUDE_PATH );
+    diag "[pkgconf $method]";
+    foreach my $dir (PkgConfig::LibPkgConf::Client->new->env->$method)
+    {
+      diag $dir;
+    }
 
-  diag '';
-  diag '';
+    diag '';
+    diag '';
+  }
 }
 
 diag '[impl]';

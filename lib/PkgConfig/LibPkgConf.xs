@@ -155,7 +155,41 @@ dir_list(self)
       ST(count++) = sv_2mortal(newSVpv(pnode->path, 0));
     }
     XSRETURN(count);
-    
+
+
+void
+filter_libdirs(self)
+    my_client_t *self
+  INIT:
+    pkgconf_node_t *n;
+    pkgconf_pkg_t *pkg;
+    pkgconf_path_t *pnode;
+    int count = 0;
+  CODE:
+    PKGCONF_FOREACH_LIST_ENTRY(self->client.filter_libdirs.head, n)
+    {
+      pnode = n->data;
+      ST(count++) = sv_2mortal(newSVpv(pnode->path, 0));
+    }
+    XSRETURN(count);    
+
+
+void
+filter_includedirs(self)
+    my_client_t *self
+  INIT:
+    pkgconf_node_t *n;
+    pkgconf_pkg_t *pkg;
+    pkgconf_path_t *pnode;
+    int count = 0;
+  CODE:
+    PKGCONF_FOREACH_LIST_ENTRY(self->client.filter_includedirs.head, n)
+    {
+      pnode = n->data;
+      ST(count++) = sv_2mortal(newSVpv(pnode->path, 0));
+    }
+    XSRETURN(count);    
+
 
 void
 DESTROY(self)
