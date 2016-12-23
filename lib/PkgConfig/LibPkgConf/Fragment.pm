@@ -12,8 +12,26 @@ PkgConfig::LibPkgConf::Fragment - Single compiler or linker flag
 
 =head1 SYNOPSIS
 
-TODO
-
+ use PkgConfig::LibPkgConf::Client;
+ 
+ my $client = PkgConfig::LibPkgConf::Client->new;
+ $client->scan_all(sub {
+   my($client, $package) = @_;
+   # $package isa PkgConfig::LibPkgConf::Package
+   foreach my $frag ($package->list_libs)
+   {
+     # $frag isa PkgConfig::LibPkgConf::Fragment
+     if($frag->type eq 'L')
+     {
+       say "Library directory: ", $frag->data;
+     }
+     elsif($frag->type eq 'l')
+     {
+       say "Library name: ", $frag->data;
+     }
+   }
+ });
+ 
 =head1 DESCRIPTION
 
 TODO

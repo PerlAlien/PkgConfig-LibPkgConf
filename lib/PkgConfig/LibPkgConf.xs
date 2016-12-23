@@ -80,7 +80,20 @@ directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag,
     return false;
   return true;
 }
-        
+
+static pkgconf_list_t *
+which_list(pkgconf_pkg_t *package, int type)
+{
+  switch(type)
+  {
+    case 0: return &package->libs;
+    case 1: return &package->libs_private;
+    case 2: return &package->cflags;
+    case 3: return &package->cflags_private;
+    default: croak("invalid type: %d", type);
+  }
+}
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
@@ -328,16 +341,8 @@ _get_string(self, client, type)
     pkgconf_list_t *list;
     pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;
     size_t len;
-    int *filter;
   CODE:
-    switch(type)
-    {
-      case 0: list = &self->libs;            break;
-      case 1: list = &self->libs_private;    break;
-      case 2: list = &self->cflags;          break;
-      case 3: list = &self->cflags_private;  break;
-      default: croak("invalid type: %d", type);
-    }
+    list = which_list(self, type); 
     pkgconf_fragment_filter(&client->client, &filtered_list, list, directory_filter, client->flags);
     len = pkgconf_fragment_render_len(&filtered_list);
     RETVAL = newSV(len == 1 ? len : len-1);
@@ -348,6 +353,39 @@ _get_string(self, client, type)
   OUTPUT:
     RETVAL
 
+
+void
+_get_list(self, client, type)
+    pkgconf_pkg_t *self
+    my_client_t *client
+    int type
+  INIT:
+    pkgconf_list_t *list;
+    pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;
+    pkgconf_node_t *node;
+    pkgconf_fragment_t *frag;
+    int count = 0;
+    HV *h;
+  CODE:
+    list = which_list(self, type); 
+    pkgconf_fragment_filter(&client->client, &filtered_list, list, directory_filter, client->flags);
+    PKGCONF_FOREACH_LIST_ENTRY(filtered_list.head, node)
+    {
+      h = newHV();
+      frag = node->data;
+      if(frag->type)
+        hv_store(h, "type", 4, newSVpvf("%c", frag->type), 0);
+      else
+        hv_store(h, "type",  4, newSVsv(&PL_sv_undef), 0);
+      if(frag->data)
+        hv_store(h, "data", 4, newSVpv(frag->data, strlen(frag->data)), 0);
+      else
+        hv_store(h, "data",  4, newSVsv(&PL_sv_undef), 0);
+      ST(count++) = newRV_noinc((SV*) h);
+    }
+    pkgconf_fragment_free(&filtered_list);
+    XSRETURN(count);
+    
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
 

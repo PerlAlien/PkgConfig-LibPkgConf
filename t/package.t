@@ -41,6 +41,25 @@ subtest 'dump' => sub {
   is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
   is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
   is $pkg->cflags_private, '-DFOO_STATIC ', 'cflags_private';
+
+  my @libs           = $pkg->list_libs;
+  my @cflags         = $pkg->list_cflags;
+  my @cflags_private = $pkg->list_cflags_private;
+  
+  is_deeply [map { ref $_ } @libs], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
+  is_deeply [map { ref $_ } @cflags], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
+  is_deeply [map { ref $_ } @cflags_private], ['PkgConfig::LibPkgConf::Fragment'];
+  
+  is $libs[0]->type, 'L';
+  is $libs[0]->data, '/test/lib';
+  is $libs[1]->type, 'l';
+  is $libs[1]->data, 'foo';
+  is $cflags[0]->type, 'f';
+  is $cflags[0]->data, 'PIC';
+  is $cflags[1]->type, 'I';
+  is $cflags[1]->data, '/test/include/foo';
+  is $cflags_private[0]->type, 'D';
+  is $cflags_private[0]->data, 'FOO_STATIC';
   
 };
 
