@@ -1,8 +1,9 @@
 This is the Perl distribution PkgConfig-LibPkgConf
 
-You need to have pkgconf and libpkgconf installed on your system first.
+To use this module you need Perl 5.8.1 or better, pkgconf and libpkgconf
+and make installed on your system first.
 
-Release tarballs for these can be found at:
+Release tarballs for libconf and libpkgconf can be found here:
 
 https://distfiles.dereferenced.org/pkgconf/
 
@@ -38,17 +39,17 @@ Alternatively, if your CPAN shell is set up, you should just be able to do:
 As a last resort, you can manually install it. Download the tarball, untar it,
 then build it:
 
-    % perl Build.PL
-    % ./Build
-    % ./Build test
+    % perl Makefile.PL
+    % make
+    % make test
 
 Then install it:
 
-    % ./Build install
+    % make install
 
 If you are installing into a system-wide directory, you may need to run:
 
-    % sudo ./Build install
+    % sudo make install
 
 ## Documentation
 
