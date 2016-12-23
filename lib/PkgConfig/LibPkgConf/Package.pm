@@ -59,6 +59,8 @@ URL for the package.
 
 TODO
 
+=head1 METHODS
+
 =head2 libs
 
 Library flags.  This usually includes things like C<-L/foo/lib> and C<-lfoo>.
@@ -68,7 +70,7 @@ Library flags.  This usually includes things like C<-L/foo/lib> and C<-lfoo>.
 sub libs
 {
   my($self) = @_;
-  $self->_libs($self->{client});
+  $self->_get_string($self->{client}, 0);
 }
 
 =head2 libs_private
@@ -80,7 +82,7 @@ Private library flags.
 sub libs_private
 {
   my($self) = @_;
-  $self->_libs_private($self->{client});
+  $self->_get_string($self->{client}, 1);
 }
 
 =head2 cflags
@@ -92,7 +94,7 @@ Compiler flags.  This usually includes things like C<-I/foo/include> and C<-DFOO
 sub cflags
 {
   my($self) = @_;
-  $self->_cflags($self->{client});
+  $self->_get_string($self->{client}, 2);
 }
 
 =head2 cflags_private
@@ -104,7 +106,7 @@ Private compiler flags.
 sub cflags_private
 {
   my($self) = @_;
-  $self->_cflags_private($self->{client});
+  $self->_get_string($self->{client}, 3);
 }
 
 =head1 SUPPORT

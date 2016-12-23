@@ -74,35 +74,13 @@ my_pkg_iterator(const pkgconf_pkg_t *pkg, void *data)
 }
 
 static bool
-filter_cflags(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
+directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
 {
   if(pkgconf_fragment_has_system_dir(client, frag))
     return false;
   return true;
 }
-
-static bool
-filter_libs(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
-{
-  if(pkgconf_fragment_has_system_dir(client, frag))
-    return false;
-  return true;
-}
-
-#define fragment_to_sv(fragment, sv, filter)                                                              \
-    {                                                                                                     \
-      pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;                                            \
-      int len;                                                                                            \
-                                                                                                          \
-      pkgconf_fragment_filter(&client->client, &filtered_list, fragment, filter, client->flags);          \
-      len = pkgconf_fragment_render_len(&filtered_list);                                                  \
-      sv = newSV(len == 1 ? len : len-1);                                                                 \
-      SvPOK_on(sv);                                                                                       \
-      SvCUR_set(sv, len-1);                                                                               \
-      pkgconf_fragment_render_buf(&filtered_list, SvPVX(sv), len);                                        \
-    }
-
-
+        
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
@@ -340,42 +318,33 @@ pc_filedir(self)
   OUTPUT:
     RETVAL
 
-SV *
-_libs(self, client)
-    pkgconf_pkg_t* self
-    my_client_t *client
-  CODE:
-    fragment_to_sv(&self->libs, RETVAL, filter_libs);
-  OUTPUT:
-    RETVAL
-
 
 SV *
-_libs_private(self, client)
-    pkgconf_pkg_t* self
+_get_string(self, client, type)
+    pkgconf_pkg_t *self
     my_client_t *client
+    int type
+  INIT:
+    pkgconf_list_t *list;
+    pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;
+    size_t len;
+    int *filter;
   CODE:
-    fragment_to_sv(&self->libs_private, RETVAL, filter_libs);
-  OUTPUT:
-    RETVAL
-
-
-SV *
-_cflags(self, client)
-    pkgconf_pkg_t* self
-    my_client_t *client
-  CODE:
-    fragment_to_sv(&self->cflags, RETVAL, filter_cflags);
-  OUTPUT:
-    RETVAL
-
-
-SV *
-_cflags_private(self, client)
-    pkgconf_pkg_t* self
-    my_client_t *client
-  CODE:
-    fragment_to_sv(&self->cflags_private, RETVAL, filter_cflags);
+    switch(type)
+    {
+      case 0: list = &self->libs;            break;
+      case 1: list = &self->libs_private;    break;
+      case 2: list = &self->cflags;          break;
+      case 3: list = &self->cflags_private;  break;
+      default: croak("invalid type: %d", type);
+    }
+    pkgconf_fragment_filter(&client->client, &filtered_list, list, directory_filter, client->flags);
+    len = pkgconf_fragment_render_len(&filtered_list);
+    RETVAL = newSV(len == 1 ? len : len-1);
+    SvPOK_on(RETVAL);
+    SvCUR_set(RETVAL, len-1);
+    pkgconf_fragment_render_buf(&filtered_list, SvPVX(RETVAL), len);
+    pkgconf_fragment_free(&filtered_list);
   OUTPUT:
     RETVAL
 
