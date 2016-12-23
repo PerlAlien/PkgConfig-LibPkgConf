@@ -9,7 +9,6 @@ sub try
 
   foreach my $cmd (qw( pkgconf pkg-config ))
   {
-    next;
     system $cmd, '--exists', $name;
     if($? == 0)
     {
@@ -31,6 +30,7 @@ sub try
     {
       my $cflags = $package->get_cflags;
       my $libs   = $package->get_ldflags;
+      print "Probe with PkgConfig.pm\n";
       return ($cflags, $libs);
     }
   }
