@@ -18,6 +18,8 @@ sub try
         my $libs   = `$cmd --libs   $name`;
         die if $?;
         print "Probe with $cmd\n";
+        chomp $cflags;
+        chomp $libs;
         ($cflags, $libs);
       }
     }
@@ -34,11 +36,26 @@ sub try
       return ($cflags, $libs);
     }
   }
-
-  die "unable to find pkgconf, pkg-config, PkgConfig.pm or $name";
+  
+  if(eval { require ExtUtils::PkgConfig; 1 })
+  {
+    # ick.  EU::PC cannot be required unconditionally
+    # because it doesn't install without pkg-config.
+    # also it is very unecessarily noisy!
+    my %info = eval { ExtUtils::PkgConfig->find($name) };
+    if(!$@)
+    {
+      print "Probe with ExtUtils::PkgConfig\n";
+      return ($info{cflags}, $info{libs});
+    }
+  }
+    
+  print STDERR "unable to find pkgconf, pkg-config, PkgConfig.pm, ExtUtils::PkgConfig or $name\n";
+  exit;
 }
 
 my($ccflags, $ldflags) = try 'libpkgconf';
+print "($ccflags, $ldflags)\n";
 
 my $builder = Module::Build->new(
   module_name        => 'PkgConfig::LibPkgConf',
