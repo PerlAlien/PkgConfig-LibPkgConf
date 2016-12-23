@@ -16,7 +16,7 @@ sub try
 {
   my($name) = @_;
 
-  foreach my $cmd (qw( pkgconf pkg-config ))
+  foreach my $cmd (qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
     do {
       no warnings 'exec';
