@@ -6,4 +6,4 @@ BEGIN {
     unless eval q{ use Test::Strict; 1 };
 }
 
-all_perl_files_ok( qw( lib t Build.PL ) );
+all_perl_files_ok( qw( lib t Makefile.PL ) );

@@ -1,4 +1,5 @@
 /Build
+/Makefile
 /MYMETA.*
 /_build
 /blib
@@ -8,3 +9,5 @@
 *.o
 *.obj
 *.log
+*.bs
+/pm_to_blib

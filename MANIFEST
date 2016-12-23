@@ -1,12 +1,10 @@
 .travis.yml
-Build.PL
 Changes
 corpus/lib1/foo.pc
 corpus/lib1/foo1.pc
 corpus/lib1/foo1a.pc
 INSTALL
 lib/PkgConfig/LibPkgConf.pm
-lib/PkgConfig/LibPkgConf.xs
 lib/PkgConfig/LibPkgConf/Client.pm
 lib/PkgConfig/LibPkgConf/FFI.pm
 lib/PkgConfig/LibPkgConf/Fragment.pm
@@ -14,12 +12,12 @@ lib/PkgConfig/LibPkgConf/Package.pm
 lib/PkgConfig/LibPkgConf/Test.pm
 lib/PkgConfig/LibPkgConf/Util.pm
 lib/PkgConfig/LibPkgConf/XS.pm
+LibPkgConf.xs
 LICENSE
 maint/buildpkgconf
 maint/releaseprep
+Makefile.PL
 MANIFEST			This list of files
-META.json
-META.yml
 README
 t/00_diag.t
 t/01_use.t

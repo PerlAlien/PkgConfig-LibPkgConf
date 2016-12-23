@@ -4,12 +4,12 @@ use warnings;
 BEGIN {
   unless(eval q{ use 5.008001; 1 })
   {
-    print "Sorry! Perl 5.8.1 or better required\n";
+    print "Sorry!  Perl 5.8.1 or better required\n";
     exit;
   }
 }
 
-use Module::Build;
+use ExtUtils::MakeMaker;
 use Config;
 
 sub try
@@ -66,24 +66,47 @@ sub try
 my($ccflags, $ldflags) = try 'libpkgconf';
 print "($ccflags, $ldflags)\n";
 
-my $builder = Module::Build->new(
-  module_name        => 'PkgConfig::LibPkgConf',
-  dist_abstract      => 'Perl bindings for libpkgconf',
-  dist_author        => [ 'Graham Ollis <plicease@cpan.org>' ],
-  license            => 'perl',
-  configure_requires => {
-    'Module::Build' => '0.38',
+my $lddlflags = $Config{lddlflags};
+my $optimize  = $Config{optimize};
+
+# This is not Platypus, but lets honor the debug env
+if($ENV{FFI_PLATYPUS_DEBUG})
+{
+  print "-lddlflags=$lddlflags\n";
+  $lddlflags =~ s/-O[0-9]?/-g3/g;
+  print "+lddlflags=$lddlflags\n";
+
+  print "-optimize=$optimize\n";
+  $optimize =~ s/-O[0-9]?/-g3/g;
+  print "+optimize=$optimize\n";
+}
+
+my %args = (
+  ABSTRACT           => 'Perl bindings for libpkgconf',
+  AUTHOR             => [ 'Graham Ollis <plicease@cpan.org>' ],
+  DISTNAME           => 'PkgConfig-LibPkgConf',
+  LICENSE            => 'perl',
+  MIN_PERL_VERSION   => '5.008001',
+  NAME               => 'PkgConfig::LibPkgConf',
+  VERSION_FROM       => 'lib/PkgConfig/LibPkgConf.pm',
+
+  CCFLAGS            => $ccflags,
+  LIBS               => $ldflags,
+  LDDLFLAGS          => $lddlflags,
+  OPTIMIZE           => $optimize,
+
+  CONFIGURE_REQUIRES => {
+    "ExtUtils::MakeMaker" => 0,
   },
-  test_requires => {
+  TEST_REQUIRES      => {
     'Test::More' => '0.94',
   },
-  build_requires => {},
-  requires => {
-    'perl' => '5.008001',
+  PREREQ_PM          => {
+    #
   },
-  extra_compiler_flags => $ccflags,
-  extra_linker_flags   => $ldflags,
-  meta_merge => {
+
+  META_MERGE => {
+    'meta-spec' => { version => 2 },
     resources => {
       repository => "http://github.com/plicease/PkgConfig-LibPkgConf",
       bugtracker => "http://github.com/plicease/PkgConfig-LibPkgConf/issues",
@@ -91,27 +114,24 @@ my $builder = Module::Build->new(
       x_IRC => "irc://irc.perl.org/#native",
     },
   },
+
+  clean => {
+    FILES => '*.log *.bak',
+  }
 );
 
-# This is not Platypus, but lets honor the debug env
-if($ENV{FFI_PLATYPUS_DEBUG})
-{
-  my $config = $builder->config;
-  foreach my $key (keys %Config)
-  {
-    my $value = $Config{$key};
-    next unless defined $value;
-    if($value =~ s/-O[0-9]?/-g3/g)
-    {
-      $builder->config($key, $value);
-      print "-$key = @{[ $config->{$key} ]}\n";
-      print "+$key = $value\n";
-    }
-  }
+my %fallback = (
+  %{ $args{TEST_REQUIRES} },
+  %{ $args{PREREQ_PM} },
+);
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  $args{PREREQ_PM} = \%fallback;
+  delete $args{TEST_REQUIRES};
+  delete $args{BUILD_REQUIRES};
 }
 
-$builder->add_to_cleanup( '*.log' );
-$builder->add_to_cleanup( '*.bak' );
-$builder->create_build_script;
+delete $args{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
-
+WriteMakefile(%args);

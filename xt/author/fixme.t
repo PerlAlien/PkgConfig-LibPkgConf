@@ -6,6 +6,6 @@ use Test::More;
 run_tests(
   filename_match => qr/\.(pm|pl)$/i,
   match => qr/(FIXME|TODO)/,
-  where => [ qw( lib t Build.PL ) ],
+  where => [ qw( lib t Makefile.PL ) ],
   warn  => 1,
 );
