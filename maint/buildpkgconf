@@ -1,12 +1,30 @@
-#!/bin/sh -x
+#!/bin/bash -x
+
+MYTMP=`mktemp -d`/build
+MYPREFIX=$HOME/opt/pkgconf
+SYSTEM_LIBDIRS=`gcc -print-search-dirs | sed -n -e's/^libraries: =//p' | sed -e 's/:/\n/g' | xargs -n1 readlink -f | grep -v 'gcc\|/[0-9.]\+$$' | sort -u | tr '\n' : | sed 's/:$$//'`
+EXTRA_CONFIGURE_FLAGS=''
+
+UNAME=`uname`
+if [ "$UNAME" == "Linux" ] ; then
+  echo "linux"
+  if [ -f "/etc/debian_version" ] ; then
+    DEB_HOST_MULTIARCH=`/usr/bin/dpkg-architecture | grep ^DEB_HOST_MULTIARCH | cut -d= -f2`
+    EXTRA_CONFIGURE_FLAGS="--with-pkg-config-dir=$MYPREFIX/lib/pkgconfig:/usr/local/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig"
+  else
+    echo "unknown linux";
+    exit 2;
+  fi
+elif [ "$UNAME" == "Darwin" ]; then
+  echo "mac"
+else
+  echo "unknown os";
+  exit 2;
+fi
 
 # this is intended for Debian only.
 # I may update it later as needed
 
-export MYTMP=`mktemp -d`/build
-export MYPREFIX=$HOME/opt/pkgconf
-export SYSTEM_LIBDIRS=`gcc -print-search-dirs | sed -n -e's/^libraries: =//p' | sed -e 's/:/\n/g' | xargs -n1 readlink -f | grep -v 'gcc\|/[0-9.]\+$$' | sort -u | tr '\n' : | sed 's/:$$//'`
-export DEB_HOST_MULTIARCH=`/usr/bin/dpkg-architecture | grep ^DEB_HOST_MULTIARCH | cut -d= -f2`
 
 git clone https://github.com/pkgconf/pkgconf.git $MYTMP
 
@@ -20,9 +38,9 @@ cd $MYTMP
   --infodir=$MYPREFIX/share/info \
   --enable-shared \
   --with-pic \
-  --with-pkg-config-dir=$MYPREFIX/lib/pkgconfig:/usr/local/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/$DEB_HOST_MULTIARCH/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig \
   --with-system-libdir=$SYSTEM_LIBDIRS \
-  --with-system-includedir=/usr/include
+  --with-system-includedir=/usr/include \
+  $EXTRA_CONFIGURE_FLAGS
 
 make
 
