@@ -1,5 +1,14 @@
 use strict;
 use warnings;
+
+BEGIN {
+  unless(eval q{ use 5.008001; 1 })
+  {
+    print "Sorry! Perl 5.8.1 or better required\n";
+    exit;
+  }
+}
+
 use Module::Build;
 use Config;
 
