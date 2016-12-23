@@ -5,20 +5,40 @@ use Config;
 
 sub try
 {
-  my($flag, $package) = @_;
-  # Question: is it better to use --exists as a separate call
-  # or --silence-errors.  The latter seems to be supported
-  # by both pkg-config and pkgconf, but I am not sure for
-  # how far back.
-  my $flags = `pkgconf --silence-errors $flag $package`;
-  return $flags unless $?;
-  $flags = `pkg-config --silence-errors $flag $package`;
-  return $flags unless $?;
-  die "unable to find pkgconf, pkg-config or $package";
+  my($name) = @_;
+
+  foreach my $cmd (qw( pkgconf pkg-config ))
+  {
+    next;
+    system $cmd, '--exists', $name;
+    if($? == 0)
+    {
+      return eval {
+        my $cflags = `$cmd --cflags $name`;
+        die if $?;
+        my $libs   = `$cmd --libs   $name`;
+        die if $?;
+        print "Probe with $cmd\n";
+        ($cflags, $libs);
+      }
+    }
+  }
+
+  if(eval { require PkgConfig; 1 })
+  {
+    my $package = PkgConfig->find($name);
+    if(!$package->errmsg)
+    {
+      my $cflags = $package->get_cflags;
+      my $libs   = $package->get_ldflags;
+      return ($cflags, $libs);
+    }
+  }
+
+  die "unable to find pkgconf, pkg-config, PkgConfig.pm or $name";
 }
 
-my $ccflags = try '--cflags', 'libpkgconf';
-my $ldflags = try '--libs',   'libpkgconf';
+my($ccflags, $ldflags) = try 'libpkgconf';
 
 my $builder = Module::Build->new(
   module_name        => 'PkgConfig::LibPkgConf',
