@@ -1,7 +1,5 @@
-/Build
 /Makefile
 /MYMETA.*
-/_build
 /blib
 /PkgConfig-LibPkgConf-*
 *.bak
