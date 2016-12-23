@@ -18,7 +18,10 @@ sub try
 
   foreach my $cmd (qw( pkgconf pkg-config ))
   {
-    system $cmd, '--exists', $name;
+    do {
+      no warnings 'exec';
+      system $cmd, '--exists', $name;
+    };
     if($? == 0)
     {
       return eval {
