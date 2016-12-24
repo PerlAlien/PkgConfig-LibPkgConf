@@ -81,6 +81,7 @@
 \.obj$
 \.c$
 \.log$
+\.bs$
 
 # Avoid archives of this distribution
 \bPkgConfig-LibPkgConf-[\d\.\_]+
