@@ -385,7 +385,27 @@ _get_list(self, client, type)
     }
     pkgconf_fragment_free(&filtered_list);
     XSRETURN(count);
-    
+
+
+void
+_get_variable(self, client, key)
+    pkgconf_pkg_t *self
+    my_client_t *client
+    const char *key
+  INIT:
+    pkgconf_node_t *node;
+    pkgconf_tuple_t *tup;
+  CODE:
+    PKGCONF_FOREACH_LIST_ENTRY(self->vars.head, node)
+    {
+      tup = node->data;
+      if(!strcmp(tup->key, key))
+      {
+        XSRETURN_PV(tup->value);
+      }
+    }
+    XSRETURN_EMPTY;
+      
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
 

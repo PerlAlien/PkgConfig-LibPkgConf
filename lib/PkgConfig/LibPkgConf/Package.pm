@@ -183,6 +183,21 @@ sub list_cflags_private
   map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 3);
 }
 
+=head2 variable
+
+ my $value = $package->variable($key);
+
+Look up the value for the given variable.  Returns the value if found,
+otherwise it will return undef (technically empty list).
+
+=cut
+
+sub variable
+{
+  my($self, $name) = @_;
+  $self->_get_variable($self->{client}, $name);
+}
+
 =head1 SUPPORT
 
 IRC #native on irc.perl.org

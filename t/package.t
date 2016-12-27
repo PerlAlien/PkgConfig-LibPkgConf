@@ -60,6 +60,9 @@ subtest 'dump' => sub {
   is $cflags[1]->data, '/test/include/foo';
   is $cflags_private[0]->type, 'D';
   is $cflags_private[0]->data, 'FOO_STATIC';
+
+  is_deeply [$pkg->variable('prefix')], ['/test'];
+  is_deeply [$pkg->variable('prefixx')], [];
   
 };
 
