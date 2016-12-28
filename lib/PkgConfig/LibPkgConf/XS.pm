@@ -11,5 +11,4 @@ XSLoader::load('PkgConfig::LibPkgConf', $VERSION);
 $PkgConfig::LibPkgConf::impl = 
 $PkgConfig::LibPkgConf::impl = 'XS';
 
-
 1;
