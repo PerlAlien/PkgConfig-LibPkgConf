@@ -212,15 +212,6 @@ filter_include_dirs(self)
     XSRETURN(count);    
 
 
-char *
-path_sep(class)
-    SV *class
-  CODE:
-    RETVAL = PKG_CONFIG_PATH_SEP_S;
-  OUTPUT:
-    RETVAL
-
-
 void
 DESTROY(self)
     my_client_t *self;
@@ -442,6 +433,14 @@ compare_version(a,b)
     const char *b
   CODE:
     RETVAL = pkgconf_compare_version(a,b);
+  OUTPUT:
+    RETVAL
+
+
+char *
+path_sep()
+  CODE:
+    RETVAL = PKG_CONFIG_PATH_SEP_S;
   OUTPUT:
     RETVAL
 

@@ -95,7 +95,7 @@ sub new
   };
 
   my $path_cvt = sub {
-    ref $_[0] ? join(__PACKAGE__->path_sep, @{$_[0]}) : $_[0];
+    ref $_[0] ? join(PkgConfig::LibPkgConf::Util::path_sep(), @{$_[0]}) : $_[0];
   };
   
   if($ENV{PKG_CONFIG_ALLOW_SYSTEM_CFLAGS} && !defined $opts->{filter_include_dirs})
@@ -296,13 +296,6 @@ closed when the object falls out of scope.  Examples:
 
  $client->audit_set_log("audit.log", "a"); # append to existing file
  $client->audit_set_log("audit2.log", "w"); # new or replace file
-
-=head2 path_sep
-
- my $sep = PkgConfig::LibPkgConf::Client->path_sep;
-
-Returns the path separator as understood by C<pkgconf>.  This is usually
-C<:> on UNIX and C<;> on Windows.
 
 =head1 SUPPORT
 

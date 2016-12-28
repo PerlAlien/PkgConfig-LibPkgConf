@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More tests => 1;
 use PkgConfig::LibPkgConf::Client;
+use PkgConfig::LibPkgConf::Util;
 
 diag '';
 diag '';
@@ -35,7 +36,7 @@ diag $PkgConfig::LibPkgConf::impl;
 diag '';
 
 diag '[path_sep]';
-diag(PkgConfig::LibPkgConf::Client->path_sep);
+diag(PkgConfig::LibPkgConf::Util::path_sep());
 
 diag '';
 diag '';

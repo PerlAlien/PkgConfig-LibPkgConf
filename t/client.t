@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use File::Temp ();
 use PkgConfig::LibPkgConf::Client;
+use PkgConfig::LibPkgConf::Util qw( path_sep );
 
 subtest 'basic create and destroy' => sub {
 
@@ -169,7 +170,7 @@ subtest 'scan all' => sub {
 
 subtest 'path attributes' => sub {
 
-  my $sep = PkgConfig::LibPkgConf::Client->path_sep;
+  my $sep = path_sep();
 
   subtest 'search path' => sub {
   

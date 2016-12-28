@@ -6,7 +6,7 @@ use base qw( Exporter );
 use PkgConfig::LibPkgConf::XS;
 
 our $VERSION = '0.01';
-our @EXPORT_OK = qw( argv_split compare_version );
+our @EXPORT_OK = qw( argv_split compare_version path_sep );
 
 =head1 NAME
 
@@ -29,6 +29,8 @@ class.
 
 =head2 argv_split
 
+ my @argv = argv_split $args;
+
 Splits a string into an argument list.
 
 =head2 compare_version
@@ -38,6 +40,13 @@ Splits a string into an argument list.
 Compare versions using RPM version comparison rules as described in the LSB.
 Returns -1 if the first version is greater, 0 if both versions are equal,
 1 if the second version is greater.
+
+=head2 path_sep
+
+ my $sep = path_sep;
+
+Returns the path separator as understood by C<pkgconf>.  This is usually
+C<:> on UNIX and C<;> on Windows.
 
 =head1 SUPPORT
 
