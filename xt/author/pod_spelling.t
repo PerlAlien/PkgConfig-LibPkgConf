@@ -21,3 +21,4 @@ libs
 realname
 refcount
 LSB
+maxdepth
