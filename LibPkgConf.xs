@@ -220,6 +220,7 @@ path_sep(class)
   OUTPUT:
     RETVAL
 
+
 void
 DESTROY(self)
     my_client_t *self;
@@ -232,6 +233,7 @@ DESTROY(self)
     pkgconf_client_deinit(&self->client);
     SvREFCNT_dec(self->error_handler);
     Safefree(self);
+
 
 IV
 _find(self, name)
@@ -258,7 +260,9 @@ _dir_list_build(self, env_only)
   CODE:
     pkgconf_pkg_dir_list_build(&self->client, env_only ? PKGCONF_PKG_PKGF_ENV_ONLY : PKGCONF_PKG_PKGF_NONE);
 
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Package
+
 
 int
 refcount(self)
@@ -408,6 +412,7 @@ _get_variable(self, client, key)
       
 
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Util
+
 
 void
 argv_split(src)
