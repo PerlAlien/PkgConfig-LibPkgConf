@@ -236,6 +236,22 @@ _find(self, name)
     RETVAL
 
 
+IV
+_package_from_file(self, filename)
+    my_client_t *self
+    const char *filename
+  INIT:
+    FILE *fp;
+  CODE:
+    fp = fopen(filename, "r");
+    if(fp != NULL)
+      RETVAL = PTR2IV(pkgconf_pkg_new_from_file(&self->client, filename, fp));
+    else
+      RETVAL = 0;
+  OUTPUT:
+    RETVAL
+
+
 void
 _scan_all(self, sub)
     my_client_t *self

@@ -232,6 +232,28 @@ sub find
   } : ();
 }
 
+=head2 package_from_file
+
+ my $pkg = $client->package_from_file($filename);
+
+Load the specific <.pc> file.
+
+=cut
+
+sub package_from_file
+{
+  my($self, $filename) = @_;
+  my $ptr = _package_from_file($self, $filename);
+  $ptr ? do {
+    require PkgConfig::LibPkgConf::Package;
+    bless {
+      client   => $self,
+      filename => $filename,
+      ptr      => $ptr,
+    }, 'PkgConfig::LibPkgConf::Package';    
+  } : ();
+}
+
 =head2 scan_all
 
  $client->scan_all(sub {
