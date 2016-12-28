@@ -18,12 +18,28 @@ PkgConfig::LibPkgConf::Package - Represents a package
  $client->env;
  
  my $pkg = $client->find('libarchive');
+ 
+ # use with system in scalar form:
  my $cflags = $pkg->cflags;
  my $libs = $pkg->libs;
+ system "$cc $cflags foo.c";
+ system "$cc -o foo foo.o $libs";
+ 
+ # use with system in list form:
+ my @cflags = $pkg->list_cflags;
+ my @libs   = $pkg->list_libs;
+ system $cc, @cflags, 'foo.c';
+ system $cc, -p => 'foo', 'foo.o', @libs;
 
 =head1 DESCRIPTION
 
-The L<PkgConfig::LibPkgConf::Package> object stores package information.
+The L<PkgConfig::LibPkgConf::Package> object stores package information.  Part
+of the package information is the compiler and linker flags.  This can be fetched
+as strings with C<cflags> and C<libs> and as a list with C<list_cflags> and
+C<list_libs>.  In the string form, escapes are retained, but in list form the
+white space escapes are converted into spaces.  That means if you are using the
+string form of C<system>/C<exec> you should use the string accessors, and if you
+are using the list form of C<system>/C<exec> you should use the list accessors.
 
 =head1 ATTRIBUTES
 

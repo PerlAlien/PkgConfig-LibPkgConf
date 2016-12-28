@@ -81,5 +81,22 @@ subtest 'filte sys' => sub {
 
 };
 
+subtest 'quotes and spaces' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new(
+    path => [ 'corpus/lib1' ],
+    filter_lib_dirs => [],
+    filter_include_dirs => [],
+  );
+  
+  my $pkg = $client->find('foo1');
+  
+  is $pkg->libs, "-L/test/lib -LC:/Program\\ Files/Foo\\ App/lib -lfoo1 ";
+  is $pkg->cflags, '-fPIC -I/test/include/foo1 -IC:/Program\\ Files/Foo\\ App/include ';
+
+  is [map { "$_" } $pkg->list_libs]->[1], '-LC:/Program Files/Foo App/lib';
+  is [map { "$_" } $pkg->list_cflags]->[2], '-IC:/Program Files/Foo App/include';
+};
+
 done_testing;
 

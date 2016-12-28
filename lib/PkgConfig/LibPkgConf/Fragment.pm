@@ -72,6 +72,7 @@ sub to_string
 {
   my($self) = @_;
   my($type, $data) = ($self->type, $self->data);
+  $data =~ s/\\(\s)/$1/g;
   $type ? "-$type$data" : $data;
 }
 
