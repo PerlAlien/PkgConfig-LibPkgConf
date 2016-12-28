@@ -217,4 +217,15 @@ subtest 'path attributes' => sub {
 
 };
 
+subtest 'maxdepth' => sub {
+
+  is [PkgConfig::LibPkgConf::Client->new->maxdepth]->[0], 2000;
+  is [PkgConfig::LibPkgConf::Client->new(maxdepth => 22)->maxdepth]->[0], 22;
+
+  my $client = PkgConfig::LibPkgConf::Client->new;
+  $client->maxdepth(42);
+  is [$client->maxdepth]->[0], 42;
+
+};
+
 done_testing;

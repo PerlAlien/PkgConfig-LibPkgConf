@@ -8,6 +8,7 @@ struct my_client_t {
   pkgconf_client_t client;
   FILE *auditf;
   unsigned int flags;
+  int maxdepth;
   SV *error_handler;
 };
 
@@ -85,10 +86,11 @@ MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
 void
-_init(object, args, error_handler)
+_init(object, args, error_handler, maxdepth)
     SV *object
     SV *args
-    SV *error_handler;
+    SV *error_handler
+    int maxdepth
   INIT:
     my_client_t *self;
   CODE:
@@ -96,6 +98,7 @@ _init(object, args, error_handler)
     self->auditf = NULL;
     self->flags  = PKGCONF_PKG_PKGF_NONE;
     self->error_handler = SvREFCNT_inc(error_handler);
+    self->maxdepth = maxdepth;
     pkgconf_client_init(&self->client, my_error_handler, self);
     hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
 
@@ -144,6 +147,19 @@ buildroot_dir(self, ...)
       pkgconf_client_set_buildroot_dir(&self->client, SvPV_nolen(ST(1)));
     }
     RETVAL = pkgconf_client_get_buildroot_dir(&self->client);
+  OUTPUT:
+    RETVAL
+
+
+int
+maxdepth(self, ...)
+    my_client_t *self
+  CODE:
+    if(items > 1)
+    {
+      self->maxdepth = SvIV(ST(1));
+    }
+    RETVAL = self->maxdepth;
   OUTPUT:
     RETVAL
 
@@ -349,8 +365,8 @@ _get_string(self, client, type)
      * TODO: attribute for max depth (also in the list version below)
      */
     eflag = type > 1
-      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, 99, flags)
-      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, 99, flags);
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth, flags)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth, flags);
     /*
      * TODO: throw an exception (also in the list verson below)
      */
@@ -390,8 +406,8 @@ _get_list(self, client, type)
      * TODO: attribute for max depth
      */
     eflag = type > 1
-      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, 99, flags)
-      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, 99, flags);
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth, flags)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth, flags);
     /*
      * TODO: throw an exception
      */

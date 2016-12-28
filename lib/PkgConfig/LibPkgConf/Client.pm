@@ -111,7 +111,7 @@ sub new
   local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->(delete $opts->{filter_lib_dirs}) if defined $opts->{filter_lib_dirs};
   local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->(delete $opts->{filter_include_dirs}) if defined $opts->{filter_include_dirs};
 
-  _init($self, $opts, $eh);
+  _init($self, $opts, $eh, delete $opts->{maxdepth} || 2000);
 
   if($opts->{path})
   {
@@ -174,6 +174,13 @@ Get or set the sysroot directory.
  $client->buildroot_dir($dir);
 
 Get or set the buildroot directory.
+
+=head2 maxdepth
+
+ my $int = $client->maxdepth;
+ $client->maxdepth($int);
+
+Get or set the maximum dependency depth.  This is 2000 by default.
 
 =head1 METHODS
 
