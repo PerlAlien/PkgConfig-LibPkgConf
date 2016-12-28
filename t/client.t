@@ -228,4 +228,34 @@ subtest 'maxdepth' => sub {
 
 };
 
+subtest 'global' => sub {
+
+  subtest 'constructor' => sub {
+  
+    my $client = PkgConfig::LibPkgConf::Client->new( global => { foo => 'bar' } );
+    
+    is_deeply [$client->global('foo')], ['bar'];
+  
+  };
+
+  subtest 'after constructor' => sub {
+  
+    my $client = PkgConfig::LibPkgConf::Client->new;
+  
+    is_deeply [$client->global('foo')], [];
+    $client->global(foo => 'bar');
+    is_deeply [$client->global('foo')], ['bar'];
+  };
+
+  subtest 'expands' => sub {
+
+    my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1', global => { prefix => '/klingon/autobot/force' } );
+    my $pkg = $client->find('foo');
+    
+    is( $pkg->cflags, '-fPIC -I/klingon/autobot/force/include/foo ' );
+
+  };
+
+};
+
 done_testing;

@@ -271,6 +271,31 @@ _dir_list_build(self, env_only)
     pkgconf_pkg_dir_list_build(&self->client, env_only ? PKGCONF_PKG_PKGF_ENV_ONLY : PKGCONF_PKG_PKGF_NONE);
 
 
+void
+_set_global(self, kv)
+    my_client_t *self
+    const char *kv
+  CODE:
+    pkgconf_tuple_define_global(&self->client, kv);
+
+
+const char *
+_get_global(self, key)
+    my_client_t *self
+    const char *key
+  INIT:
+    const char *val;
+  CODE:
+    val = pkgconf_tuple_find_global(&self->client, key);
+    if(val == NULL)
+      XSRETURN_EMPTY;
+    else
+      RETVAL = val;
+  OUTPUT:
+    RETVAL
+    
+
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Package
 
 

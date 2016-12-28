@@ -132,6 +132,11 @@ sub new
     $self->sysroot_dir($ENV{PKG_CONFIG_SYSROOT_DIR});
   }
 
+  if(my $global = delete $opts->{global})
+  {
+    $self->global($_ => $global->{$_}) for keys %$global;
+  }
+
   foreach my $key (sort keys %$opts)
   {
     require Carp;
@@ -284,6 +289,25 @@ sub scan_all
   };
 
   $self->_scan_all($wrapper);
+}
+
+=head2 global
+
+ $client->global($key => $value);
+ my $value = $client->global($key);
+
+Define or get the global variable.
+
+=cut
+
+sub global
+{
+  my($self, $key, $value) = @_;
+  if(defined $value)
+  {
+    $self->_set_global("$key=$value");
+  }
+  $self->_get_global($key);
 }
 
 =head2 error
