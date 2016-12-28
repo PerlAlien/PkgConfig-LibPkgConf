@@ -27,10 +27,6 @@ subtest 'find' => sub {
   note "cflags         = @{[ $pkg->cflags ]}";
   note "cflags_static  = @{[ $pkg->cflags_static ]}";
 
-  # TODO:
-  #note "url         = @{[ $pkg->url ]}";
-  #note "pc_filedir  = @{[ $pkg->pc_filedir ]}";
-
   is $pkg->refcount, 2, 'refcount';
   is $pkg->id, 'foo', 'id';
   is $pkg->filename, 'corpus/lib1/foo.pc', 'filename';
@@ -88,10 +84,6 @@ subtest 'package_from_file' => sub {
   note "libs_static    = @{[ $pkg->libs_static ]}";
   note "cflags         = @{[ $pkg->cflags ]}";
   note "cflags_static  = @{[ $pkg->cflags_static ]}";
-
-  # TODO:
-  #note "url         = @{[ $pkg->url ]}";
-  #note "pc_filedir  = @{[ $pkg->pc_filedir ]}";
 
   is $pkg->refcount, 1, 'refcount';
   is $pkg->id, 'foo', 'id';

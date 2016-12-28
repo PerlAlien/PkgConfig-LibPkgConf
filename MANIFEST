@@ -8,7 +8,6 @@ corpus/lib2/foo.pc
 INSTALL
 lib/PkgConfig/LibPkgConf.pm
 lib/PkgConfig/LibPkgConf/Client.pm
-lib/PkgConfig/LibPkgConf/FFI.pm
 lib/PkgConfig/LibPkgConf/Fragment.pm
 lib/PkgConfig/LibPkgConf/Package.pm
 lib/PkgConfig/LibPkgConf/Test.pm
