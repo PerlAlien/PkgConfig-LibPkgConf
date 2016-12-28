@@ -23,9 +23,9 @@ subtest 'find' => sub {
   note "version        = @{[ $pkg->version ]}";
   note "description    = @{[ $pkg->description ]}";
   note "libs           = @{[ $pkg->libs ]}";
-  note "libs_private   = @{[ $pkg->libs_private ]}";
+  note "libs_static    = @{[ $pkg->libs_static ]}";
   note "cflags         = @{[ $pkg->cflags ]}";
-  note "cflags_private = @{[ $pkg->cflags_private ]}";
+  note "cflags_static  = @{[ $pkg->cflags_static ]}";
 
   # TODO:
   #note "url         = @{[ $pkg->url ]}";
@@ -40,15 +40,15 @@ subtest 'find' => sub {
 
   is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
   is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
-  is $pkg->cflags_private, '-DFOO_STATIC ', 'cflags_private';
+  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC ', 'cflags_static';
 
   my @libs           = $pkg->list_libs;
   my @cflags         = $pkg->list_cflags;
-  my @cflags_private = $pkg->list_cflags_private;
+  my @cflags_static  = $pkg->list_cflags_static;
   
   is_deeply [map { ref $_ } @libs], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
   is_deeply [map { ref $_ } @cflags], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
-  is_deeply [map { ref $_ } @cflags_private], ['PkgConfig::LibPkgConf::Fragment'];
+  is_deeply [map { ref $_ } @cflags_static], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..3 ];
   
   is $libs[0]->type, 'L';
   is $libs[0]->data, '/test/lib';
@@ -58,8 +58,8 @@ subtest 'find' => sub {
   is $cflags[0]->data, 'PIC';
   is $cflags[1]->type, 'I';
   is $cflags[1]->data, '/test/include/foo';
-  is $cflags_private[0]->type, 'D';
-  is $cflags_private[0]->data, 'FOO_STATIC';
+  is $cflags_static[2]->type, 'D';
+  is $cflags_static[2]->data, 'FOO_STATIC';
 
   is_deeply [$pkg->variable('prefix')], ['/test'];
   is_deeply [$pkg->variable('prefixx')], [];
@@ -85,9 +85,9 @@ subtest 'package_from_file' => sub {
   note "version        = @{[ $pkg->version ]}";
   note "description    = @{[ $pkg->description ]}";
   note "libs           = @{[ $pkg->libs ]}";
-  note "libs_private   = @{[ $pkg->libs_private ]}";
+  note "libs_static    = @{[ $pkg->libs_static ]}";
   note "cflags         = @{[ $pkg->cflags ]}";
-  note "cflags_private = @{[ $pkg->cflags_private ]}";
+  note "cflags_static  = @{[ $pkg->cflags_static ]}";
 
   # TODO:
   #note "url         = @{[ $pkg->url ]}";
@@ -102,15 +102,15 @@ subtest 'package_from_file' => sub {
 
   is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
   is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
-  is $pkg->cflags_private, '-DFOO_STATIC ', 'cflags_private';
+  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC ', 'cflags_static';
 
   my @libs           = $pkg->list_libs;
   my @cflags         = $pkg->list_cflags;
-  my @cflags_private = $pkg->list_cflags_private;
+  my @cflags_static  = $pkg->list_cflags_static;
   
   is_deeply [map { ref $_ } @libs], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
   is_deeply [map { ref $_ } @cflags], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..2 ];
-  is_deeply [map { ref $_ } @cflags_private], ['PkgConfig::LibPkgConf::Fragment'];
+  is_deeply [map { ref $_ } @cflags_static], [map { 'PkgConfig::LibPkgConf::Fragment' } 1..3 ];
   
   is $libs[0]->type, 'L';
   is $libs[0]->data, '/test/lib';
@@ -120,8 +120,8 @@ subtest 'package_from_file' => sub {
   is $cflags[0]->data, 'PIC';
   is $cflags[1]->type, 'I';
   is $cflags[1]->data, '/test/include/foo';
-  is $cflags_private[0]->type, 'D';
-  is $cflags_private[0]->data, 'FOO_STATIC';
+  is $cflags_static[2]->type, 'D';
+  is $cflags_static[2]->data, 'FOO_STATIC';
 
   is_deeply [$pkg->variable('prefix')], ['/test'];
   is_deeply [$pkg->variable('prefixx')], [];
@@ -158,6 +158,26 @@ subtest 'quotes and spaces' => sub {
 
   is [map { "$_" } $pkg->list_libs]->[1], '-LC:/Program Files/Foo App/lib';
   is [map { "$_" } $pkg->list_cflags]->[2], '-IC:/Program Files/Foo App/include';
+};
+
+subtest 'package with prereq' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new(
+    path => [ 'corpus/lib2' ],
+    filter_lib_dirs => [],
+    filter_include_dirs => [],
+  );
+  
+  my $pkg = $client->find('foo');
+  
+  is $pkg->libs,           '-L/test/lib -lfoo -L/test2/lib -lbar ';
+  is $pkg->cflags,         '-I/test/include/foo -I/test2/include/bar ';
+  is $pkg->cflags_static,  '-I/test/include/foo -I/test2/include/bar -DFOO_STATIC -DBAR_STATIC ';
+
+  is_deeply [$pkg->list_libs],           [qw( -L/test/lib -lfoo -L/test2/lib -lbar )];
+  is_deeply [$pkg->list_cflags],         [qw( -I/test/include/foo -I/test2/include/bar )];
+  is_deeply [$pkg->list_cflags_static],  [qw( -I/test/include/foo -I/test2/include/bar -DFOO_STATIC -DBAR_STATIC )];
+  
 };
 
 done_testing;

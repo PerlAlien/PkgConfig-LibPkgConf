@@ -81,19 +81,6 @@ directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag,
   return true;
 }
 
-static pkgconf_list_t *
-which_list(pkgconf_pkg_t *package, int type)
-{
-  switch(type)
-  {
-    case 0: return &package->libs;
-    case 1: return &package->libs_private;
-    case 2: return &package->cflags;
-    case 3: return &package->cflags_private;
-    default: croak("invalid type: %d", type);
-  }
-}
-
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
@@ -349,18 +336,34 @@ _get_string(self, client, type)
     my_client_t *client
     int type
   INIT:
-    pkgconf_list_t *list;
-    pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;
+    pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
+    pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
     size_t len;
+    int eflag;
+    int flags;
   CODE:
-    list = which_list(self, type); 
-    pkgconf_fragment_filter(&client->client, &filtered_list, list, directory_filter, client->flags);
+    flags = client->flags;
+    if(type % 2)
+      flags = flags | PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS;
+    /*
+     * TODO: attribute for max depth (also in the list version below)
+     */
+    eflag = type > 1
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, 99, flags)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, 99, flags);
+    /*
+     * TODO: throw an exception (also in the list verson below)
+     */
+    if(eflag != PKGCONF_PKG_ERRF_OK)
+      XSRETURN_EMPTY;
+    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, client->flags);
     len = pkgconf_fragment_render_len(&filtered_list);
     RETVAL = newSV(len == 1 ? len : len-1);
     SvPOK_on(RETVAL);
     SvCUR_set(RETVAL, len-1);
     pkgconf_fragment_render_buf(&filtered_list, SvPVX(RETVAL), len);
     pkgconf_fragment_free(&filtered_list);
+    pkgconf_fragment_free(&unfiltered_list);
   OUTPUT:
     RETVAL
 
@@ -371,15 +374,30 @@ _get_list(self, client, type)
     my_client_t *client
     int type
   INIT:
-    pkgconf_list_t *list;
-    pkgconf_list_t filtered_list = PKGCONF_LIST_INITIALIZER;
+    pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
+    pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
     pkgconf_node_t *node;
     pkgconf_fragment_t *frag;
     int count = 0;
     HV *h;
+    int eflag;
+    int flags;
   CODE:
-    list = which_list(self, type); 
-    pkgconf_fragment_filter(&client->client, &filtered_list, list, directory_filter, client->flags);
+    flags = client->flags;
+    if(type % 2)
+      flags = flags | PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS;
+    /*
+     * TODO: attribute for max depth
+     */
+    eflag = type > 1
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, 99, flags)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, 99, flags);
+    /*
+     * TODO: throw an exception
+     */
+    if(eflag != PKGCONF_PKG_ERRF_OK)
+      XSRETURN_EMPTY;
+    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, client->flags);
     PKGCONF_FOREACH_LIST_ENTRY(filtered_list.head, node)
     {
       h = newHV();
@@ -395,6 +413,7 @@ _get_list(self, client, type)
       ST(count++) = newRV_noinc((SV*) h);
     }
     pkgconf_fragment_free(&filtered_list);
+    pkgconf_fragment_free(&unfiltered_list);
     XSRETURN(count);
 
 

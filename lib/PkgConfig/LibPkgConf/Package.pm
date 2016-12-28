@@ -89,13 +89,13 @@ sub libs
   $self->_get_string($self->{client}, 0);
 }
 
-=head2 libs_private
+=head2 libs_static
 
-Private library flags.
+Static library flags.
 
 =cut
 
-sub libs_private
+sub libs_static
 {
   my($self) = @_;
   $self->_get_string($self->{client}, 1);
@@ -113,13 +113,13 @@ sub cflags
   $self->_get_string($self->{client}, 2);
 }
 
-=head2 cflags_private
+=head2 cflags_static
 
-Private compiler flags.
+Static compiler flags.
 
 =cut
 
-sub cflags_private
+sub cflags_static
 {
   my($self) = @_;
   $self->_get_string($self->{client}, 3);
@@ -147,15 +147,15 @@ sub list_libs
   map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 0);
 }
 
-=head2 list_libs_private
+=head2 list_libs_static
 
- my @fragments = $package->list_libs_private;
+ my @fragments = $package->list_libs_static;
 
-Similar to C<list_libs>, but for the private libs flags.
+Similar to C<list_libs>, but for the static libs flags.
 
 =cut
 
-sub list_libs_private
+sub list_libs_static
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
@@ -184,15 +184,15 @@ sub list_cflags
   map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 2);
 }
 
-=head2 list_cflags_private
+=head2 list_cflags_static
 
- my @fragments = $package->list_cflags_private;
+ my @fragments = $package->list_cflags_static;
 
-Similar to C<list_cflags>, but for the private compiler flags.
+Similar to C<list_cflags>, but for the static compiler flags.
 
 =cut
 
-sub list_cflags_private
+sub list_cflags_static
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
