@@ -218,18 +218,22 @@ not found returns C<undef>.
 
 =cut
 
+sub _pkg
+{
+  my($client, $ptr, @rest) = @_;
+  require PkgConfig::LibPkgConf::Package;
+  bless {
+    client => $client,
+    ptr    => $ptr,
+    @rest
+  }, 'PkgConfig::LibPkgConf::Package';
+}
+
 sub find
 {
   my($self, $name) = @_;
   my $ptr = _find($self, $name);
-  $ptr ? do {
-    require PkgConfig::LibPkgConf::Package;
-    bless {
-      client => $self,
-      name   => $name,
-      ptr    => $ptr,
-    }, 'PkgConfig::LibPkgConf::Package';
-  } : ();
+  $ptr ? _pkg($self, $ptr, name => $name) : ();
 }
 
 =head2 package_from_file
@@ -244,14 +248,7 @@ sub package_from_file
 {
   my($self, $filename) = @_;
   my $ptr = _package_from_file($self, $filename);
-  $ptr ? do {
-    require PkgConfig::LibPkgConf::Package;
-    bless {
-      client   => $self,
-      filename => $filename,
-      ptr      => $ptr,
-    }, 'PkgConfig::LibPkgConf::Package';    
-  } : ();
+  $ptr ? _pkg($self, $ptr, filename => $filename) : ();
 }
 
 =head2 scan_all
@@ -275,11 +272,7 @@ sub scan_all
 
   my $wrapper = sub {
     my($ptr) = @_;
-    require PkgConfig::LibPkgConf::Package;
-    my $package = bless {
-      client => $self,
-      ptr    => $ptr,
-    }, 'PkgConfig::LibPkgConf::Package';
+    my $package = _pkg($self, $ptr);
     $callback->($self, $package);
   };
 
