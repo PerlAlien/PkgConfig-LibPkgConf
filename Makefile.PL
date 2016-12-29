@@ -16,6 +16,12 @@ sub try
 {
   my($name) = @_;
 
+  if(eval { require Alien::pkgconf; 1 })
+  {
+    print "Probe with Alien::pkgconf\n";
+    return (Alien::pkgconf->cflags, Alien::pkgconf->libs);
+  }
+
   foreach my $cmd (qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
     do {
