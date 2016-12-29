@@ -12,6 +12,10 @@ BEGIN {
 use ExtUtils::MakeMaker;
 use Config;
 
+my $cc = $Config{cc};
+my $ld = $Config{ld};
+my $alien = 0;
+
 sub try
 {
   my($name) = @_;
@@ -67,9 +71,11 @@ sub try
       return ($info{cflags}, $info{libs});
     }
   }
-    
-  print STDERR "unable to find pkgconf, pkg-config, PkgConfig.pm, ExtUtils::PkgConfig or $name\n";
-  exit;
+  
+  $alien = 1;
+  $cc = '$(FULLPERL) script/cc_wrapper.pl';
+  $ld = '$(FULLPERL) script/ld_wrapper.pl';
+  return ('','');
 }
 
 my($ccflags, $ldflags) = try 'libpkgconf';
@@ -99,6 +105,9 @@ my %args = (
   NAME               => 'PkgConfig::LibPkgConf',
   VERSION_FROM       => 'lib/PkgConfig/LibPkgConf.pm',
 
+  CC                 => $cc,
+  LD                 => $ld,
+
   CCFLAGS            => $ccflags,
   LIBS               => $ldflags,
   LDDLFLAGS          => $lddlflags,
@@ -106,6 +115,9 @@ my %args = (
 
   CONFIGURE_REQUIRES => {
     "ExtUtils::MakeMaker" => 0,
+  },
+  BUILD_REQUIRES     => {
+    ($alien ? ('Alien::pkgconf' => '0.01') : ()),
   },
   TEST_REQUIRES      => {
     'Test::More' => '0.94',
@@ -122,6 +134,7 @@ my %args = (
       x_MailingList => "https://groups.google.com/forum/#!forum/perl5-alien",
       x_IRC => "irc://irc.perl.org/#native",
     },
+    dynamic_config => 1,
   },
 
   clean => {

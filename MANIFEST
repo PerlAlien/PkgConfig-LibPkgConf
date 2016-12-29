@@ -20,6 +20,8 @@ maint/releaseprep
 Makefile.PL
 MANIFEST			This list of files
 README
+script/cc_wrapper.pl
+script/ld_wrapper.pl
 t/00_diag.t
 t/01_use.t
 t/client.t
