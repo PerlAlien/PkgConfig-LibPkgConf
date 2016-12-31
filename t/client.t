@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use File::Temp ();
+use File::Path qw( mkpath );
 use PkgConfig::LibPkgConf::Client;
 use PkgConfig::LibPkgConf::Util qw( path_sep );
 
@@ -172,11 +173,14 @@ subtest 'path attributes' => sub {
 
   my $sep = path_sep();
 
-  subtest 'search path' => sub {
-  
-    my $root = File::Temp::tempdir( CLEANUP => 1 );
+  my $root = File::Temp::tempdir( CLEANUP => 1 );
     
-    mkdir "$root/$_" for qw( foo bar baz ralph trans formers );
+  mkpath "$root/$_", 0, 0700 for qw( 
+    foo bar baz ralph trans formers foo/lib bar/lib trans/lib formers/lib 
+    foo/include bar/include trans/include formers/include
+  );
+  
+  subtest 'search path' => sub {
   
     local $ENV{PKG_CONFIG_PATH} = join $sep, "$root/foo", "$root/bar";
     local $ENV{PKG_CONFIG_LIBDIR} = join $sep, "$root/baz", "$root/ralph";
@@ -195,27 +199,27 @@ subtest 'path attributes' => sub {
   
   subtest 'filter lib dirs' => sub {
 
-    local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = join $sep, '/foo/lib', '/bar/lib';
+    local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = join $sep, map { "$root$_" } '/foo/lib', '/bar/lib';
 
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
-      [qw( /foo/lib /bar/lib )];
+      [map { "$root$_" } qw( /foo/lib /bar/lib )];
     is_deeply
-      [PkgConfig::LibPkgConf::Client->new(filter_lib_dirs => [qw( /trans/lib /formers/lib )])->filter_lib_dirs], 
-      [qw( /trans/lib /formers/lib )];
+      [PkgConfig::LibPkgConf::Client->new(filter_lib_dirs => [map { "$root$_" } qw( /trans/lib /formers/lib )])->filter_lib_dirs], 
+      [map { "$root$_" } qw( /trans/lib /formers/lib )];
 
   };
 
   subtest 'filter include dirs' => sub {
 
-    local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = join $sep, '/foo/include', '/bar/include';
+    local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = join $sep, map { "$root$_" } '/foo/include', '/bar/include';
 
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
-      [qw( /foo/include /bar/include )];
+      [map { "$root$_" } qw( /foo/include /bar/include )];
     is_deeply
-      [PkgConfig::LibPkgConf::Client->new(filter_include_dirs => [qw( /trans/include /formers/include )])->filter_include_dirs], 
-      [qw( /trans/include /formers/include )];
+      [PkgConfig::LibPkgConf::Client->new(filter_include_dirs => [map { "$root$_" } qw( /trans/include /formers/include )])->filter_include_dirs], 
+      [map { "$root$_" } qw( /trans/include /formers/include )];
 
   };
 

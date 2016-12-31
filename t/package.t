@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use File::Temp ();
 use PkgConfig::LibPkgConf::Package;
 use PkgConfig::LibPkgConf::Client;
 
@@ -122,10 +123,17 @@ subtest 'package_from_file' => sub {
 
 subtest 'filte sys' => sub {
 
+  my $prefix = File::Temp::tempdir( CLEANUP => 1 );
+
+  mkdir "$prefix/$_" for qw( lib include include/foo );
+
   my $client = PkgConfig::LibPkgConf::Client->new(
     path => [ 'corpus/lib1' ],
-    filter_lib_dirs => [ '/test/lib' ],
-    filter_include_dirs => [ '/test/include/foo' ],
+    filter_lib_dirs => [ "$prefix/lib" ],
+    filter_include_dirs => [ "$prefix/include/foo" ],
+    global => {
+      prefix => $prefix,
+    },
   );
   
   my $pkg = $client->find('foo');
