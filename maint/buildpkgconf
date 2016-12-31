@@ -41,7 +41,11 @@ git clone https://github.com/pkgconf/pkgconf.git $MYTMP
 
 cd $MYTMP
 
-git checkout $COMMIT
+if [ "$COMMIT" != "master" ] ; then
+  git remote add mine https://github.com/plicease/pkgconf.git
+  git remote update -p
+  git checkout $COMMIT
+fi;
 
 ./autogen.sh
 
