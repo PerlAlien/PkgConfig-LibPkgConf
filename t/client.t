@@ -174,18 +174,22 @@ subtest 'path attributes' => sub {
 
   subtest 'search path' => sub {
   
-    local $ENV{PKG_CONFIG_PATH} = join $sep, '/foo', '/bar';
-    local $ENV{PKG_CONFIG_LIBDIR} = join $sep, '/baz', '/ralph';
+    my $root = File::Temp::tempdir( CLEANUP => 1 );
+    
+    mkdir "$root/$_" for qw( foo bar baz ralph trans formers );
+  
+    local $ENV{PKG_CONFIG_PATH} = join $sep, "$root/foo", "$root/bar";
+    local $ENV{PKG_CONFIG_LIBDIR} = join $sep, "$root/baz", "$root/ralph";
 
     is_deeply 
       [PkgConfig::LibPkgConf::Client->new->path], 
-      [qw( /foo /bar /baz /ralph )];
+      [map { "$root$_" } qw( /foo /bar /baz /ralph )];
     is_deeply
-      [PkgConfig::LibPkgConf::Client->new(path => join($sep, qw( /trans /formers )))->path], 
-      [qw( /trans /formers )];
+      [PkgConfig::LibPkgConf::Client->new(path => join($sep, map { "$root$_" } qw( /trans /formers )))->path], 
+      [map { "$root$_" } qw( /trans /formers )];
     is_deeply
-      [PkgConfig::LibPkgConf::Client->new(path => [qw( /trans /formers )])->path], 
-      [qw( /trans /formers )];
+      [PkgConfig::LibPkgConf::Client->new(path => [map { "$root$_" } qw( /trans /formers )])->path], 
+      [map { "$root$_" } qw( /trans /formers )];
   
   };
   
