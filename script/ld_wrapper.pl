@@ -4,4 +4,12 @@ use Config;
 use Text::ParseWords qw( shellwords );
 use Alien::pkgconf;
 
-exec $Config{cc}, @ARGV, shellwords(Alien::pkgconf->cflags);
+my @list = (
+  $Config{cc},
+  @ARGV,
+  shellwords(Alien::pkgconf->libs),
+);
+
+#print "+@list\n";
+
+exec @list;

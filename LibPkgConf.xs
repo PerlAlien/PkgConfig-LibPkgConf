@@ -521,6 +521,18 @@ path_sep()
     RETVAL
 
 
+#define STRINGIZE(x) #x
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+
+
+const char *
+version()
+  CODE:
+    RETVAL = STRINGIZE_VALUE_OF(MY_PKGCONF_VERSION);
+  OUTPUT:
+    RETVAL
+
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Test
 
 

@@ -20,15 +20,12 @@ sub try
 {
   my($name) = @_;
 
-  # I am delaying the release of Alien::pkgconf because it
-  # does not appear to work quite right with this module
-  # yet.
-  #if(eval { require Alien::pkgconf; 1 })
-  #{
-  #  print "Probe with Alien::pkgconf\n";
-  #  return (Alien::pkgconf->cflags, Alien::pkgconf->libs);
-  #}
-
+  if(eval { require Alien::pkgconf; 1 })
+  {
+    print "Probe with Alien::pkgconf\n";
+    return (Alien::pkgconf->cflags, Alien::pkgconf->libs, Alien::pkgconf->version);
+  }
+  
   foreach my $cmd (qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
     do {
@@ -37,16 +34,20 @@ sub try
     };
     if($? == 0)
     {
-      return eval {
+      my @l = eval {
         my $cflags = `$cmd --cflags $name`;
         die if $?;
         my $libs   = `$cmd --libs   $name`;
         die if $?;
+        my $version   = `$cmd --modversion   $name`;
+        die if $?;
+        chomp $version;
         print "Probe with $cmd\n";
         chomp $cflags;
         chomp $libs;
-        ($cflags, $libs);
-      }
+        ($cflags, $libs, $version);
+      };
+      return @l unless $@;
     }
   }
 
@@ -55,10 +56,8 @@ sub try
     my $package = PkgConfig->find($name);
     if(!$package->errmsg)
     {
-      my $cflags = $package->get_cflags;
-      my $libs   = $package->get_ldflags;
       print "Probe with PkgConfig.pm\n";
-      return ($cflags, $libs);
+      return ($package->get_cflags, $package->get_ldflags, $package->pkg_version);
     }
   }
   
@@ -71,18 +70,24 @@ sub try
     if(!$@)
     {
       print "Probe with ExtUtils::PkgConfig\n";
-      return ($info{cflags}, $info{libs});
+      return ($info{cflags}, $info{libs}, $info{modversion});
     }
   }
-  
+
   $alien = 1;
   $cc = '$(FULLPERL) script/cc_wrapper.pl';
   $ld = '$(FULLPERL) script/ld_wrapper.pl';
   return ('','');
 }
 
-my($ccflags, $ldflags) = try 'libpkgconf';
-print "($ccflags, $ldflags)\n";
+my($ccflags, $ldflags, $version) = try 'libpkgconf';
+
+unless($alien)
+{
+  $ccflags .= "-DMY_PKGCONF_VERSION=$version";
+}
+
+print "($ccflags, $ldflags, $version)\n";
 
 my $lddlflags = $Config{lddlflags};
 my $optimize  = $Config{optimize};

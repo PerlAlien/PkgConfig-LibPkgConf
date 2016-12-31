@@ -39,6 +39,11 @@ diag '[path_sep]';
 diag(PkgConfig::LibPkgConf::Util::path_sep());
 
 diag '';
+
+diag '[version]';
+diag(PkgConfig::LibPkgConf::Util::version());
+
+diag '';
 diag '';
 
 
