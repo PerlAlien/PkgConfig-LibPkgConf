@@ -1,5 +1,11 @@
 #!/bin/bash -x
 
+if [ "$1" == "" ] ; then
+  COMMIT=master
+else
+  COMMIT="$1"
+fi
+
 MYTMP=`mktemp -d`/build
 MYPREFIX=$HOME/opt/pkgconf
 EXTRA_CONFIGURE_FLAGS=''
@@ -34,6 +40,8 @@ fi
 git clone https://github.com/pkgconf/pkgconf.git $MYTMP
 
 cd $MYTMP
+
+git checkout $COMMIT
 
 ./autogen.sh
 
