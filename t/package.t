@@ -180,5 +180,20 @@ subtest 'package with prereq' => sub {
   
 };
 
+subtest 'package with static libs' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new(
+    path => [ 'corpus/lib3' ],
+    filter_lib_dirs => [],
+    filter_include_dirs => [],
+  );
+  
+  my $pkg = $client->find('foo');
+
+  is $pkg->libs_static, '-L/test/lib -lfoo -lbar -lbaz ';
+  is_deeply [$pkg->list_libs_static], [qw( -L/test/lib -lfoo -lbar -lbaz )];
+
+};
+
 done_testing;
 

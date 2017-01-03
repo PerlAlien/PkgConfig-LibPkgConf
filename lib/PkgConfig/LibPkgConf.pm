@@ -6,7 +6,14 @@ use base qw( Exporter );
 
 our $VERSION = '0.01';
 our $impl = 'unloaded';
-our @EXPORT = qw( pkgconf_cflags pkgconf_libs pkgconf_exists pkgconf_version );
+our @EXPORT = qw(
+  pkgconf_cflags
+  pkgconf_libs
+  pkgconf_exists
+  pkgconf_version
+  pkgconf_cflags_static
+  pkgconf_libs_static
+);
 
 require PkgConfig::LibPkgConf::XS;
 
@@ -77,7 +84,7 @@ sub pkgconf_version
 
 =head2 pkgconf_cflags
 
- my $clfags = pkgconf_cflags $package_name;
+ my $cflags = pkgconf_cflags $package_name;
 
 Returns the compiler flags for the package, if it exists.  Will throw an
 exception if not found.
@@ -90,6 +97,21 @@ sub pkgconf_cflags
 {
   my $pkg = _pkg($_[0]);
   $pkg->cflags;
+}
+
+=head2 pkgconf_cflags_static
+
+ my $cflags = pkgconf_cflags_static $package_name;
+
+Returns the static compiler flags for the package, if it exists.  Will throw
+an exception if not found.
+
+=cut
+
+sub pkgconf_cflags_static
+{
+  my $pkg = _pkg($_[0]);
+  $pkg->cflags_static;  
 }
 
 =head2 pkgconf_libs
@@ -107,6 +129,22 @@ sub pkgconf_libs
 {
   my $pkg = _pkg($_[0]);
   $pkg->libs;
+}
+
+=head2 pkgconf_libs_static
+
+ my $libs = pkgconf_libs_static $package_name;
+
+Returns the static linker library flags for the package, if it exists.  Will
+throw an exception if not found.
+
+=cut
+
+sub pkgconf_libs_static
+{
+  my $pkg = _pkg($_[0]);
+  $DB::single = 1;
+  $pkg->libs_static;  
 }
 
 sub _pkg
