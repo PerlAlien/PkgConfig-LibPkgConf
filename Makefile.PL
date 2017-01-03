@@ -15,12 +15,13 @@ use Config;
 my $cc = $Config{cc};
 my $ld = $Config{ld};
 my $alien = 0;
+my $alien_ver = '0.03';
 
 sub try
 {
   my($name) = @_;
 
-  if(eval { require Alien::pkgconf; 1 })
+  if(eval q{ use Alien::pkgconf $alien_ver; 1 })
   {
     print "Probe with Alien::pkgconf\n";
     return (Alien::pkgconf->cflags, Alien::pkgconf->libs, Alien::pkgconf->version);
@@ -125,7 +126,7 @@ my %args = (
     "ExtUtils::MakeMaker" => 0,
   },
   BUILD_REQUIRES     => {
-    ($alien ? ('Alien::pkgconf' => '0.01') : ()),
+    ($alien ? ('Alien::pkgconf' => $alien_ver) : ()),
   },
   TEST_REQUIRES      => {
     'Test::More' => '0.94',
