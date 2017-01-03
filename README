@@ -43,12 +43,18 @@ FUNCTIONS
     Exported by default.
 
   pkgconf_cflags
-     my $clfags = pkgconf_cflags $package_name;
+     my $cflags = pkgconf_cflags $package_name;
 
     Returns the compiler flags for the package, if it exists. Will throw an
     exception if not found.
 
     Exported by default.
+
+  pkgconf_cflags_static
+     my $cflags = pkgconf_cflags_static $package_name;
+
+    Returns the static compiler flags for the package, if it exists. Will
+    throw an exception if not found.
 
   pkgconf_libs
      my $libs = pkgconf_libs $package_name;
@@ -57,6 +63,12 @@ FUNCTIONS
     throw an exception if not found.
 
     Exported by default.
+
+  pkgconf_libs_static
+     my $libs = pkgconf_libs_static $package_name;
+
+    Returns the static linker library flags for the package, if it exists.
+    Will throw an exception if not found.
 
 SUPPORT
     IRC #native on irc.perl.org

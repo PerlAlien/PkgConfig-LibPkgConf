@@ -1,5 +1,6 @@
 Revision history for PkgConfig-LibPkgConf
 
+0.02 2017-01-03 11:24:13 -0500
   - Added pkgconf_cflags_static, pkgconf_libs_static functions
     to PkgConfig::LibPkgConf
 
