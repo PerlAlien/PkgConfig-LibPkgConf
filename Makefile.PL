@@ -138,8 +138,15 @@ my %args = (
   META_MERGE => {
     'meta-spec' => { version => 2 },
     resources => {
-      repository => "http://github.com/plicease/PkgConfig-LibPkgConf",
-      bugtracker => "http://github.com/plicease/PkgConfig-LibPkgConf/issues",
+      repository => {
+        type => 'git',
+        url  => "http://github.com/plicease/PkgConfig-LibPkgConf.git",
+        web  => "http://github.com/plicease/PkgConfig-LibPkgConf",
+      },
+      bugtracker => {
+        web => "http://github.com/plicease/PkgConfig-LibPkgConf/issues",
+      },
+      homepage => "https://metacpan.org/pod/PkgConfig-LibPkgConf",
       x_MailingList => "https://groups.google.com/forum/#!forum/perl5-alien",
       x_IRC => "irc://irc.perl.org/#native",
     },
