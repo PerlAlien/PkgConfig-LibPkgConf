@@ -136,7 +136,6 @@ my %args = (
   },
 
   META_MERGE => {
-    'meta-spec' => { version => 2 },
     resources => {
       repository => "http://github.com/plicease/PkgConfig-LibPkgConf",
       bugtracker => "http://github.com/plicease/PkgConfig-LibPkgConf/issues",
