@@ -1,5 +1,6 @@
 Revision history for PkgConfig-LibPkgConf
 
+0.03 2017-01-18 08:32:50 -0500
   - Fixed linker issues on FreeBSD
 
 0.02 2017-01-03 11:24:13 -0500

@@ -5,7 +5,7 @@ use warnings;
 use PkgConfig::LibPkgConf::XS;
 use Scalar::Util ();
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
