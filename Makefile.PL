@@ -105,6 +105,26 @@ if($ENV{FFI_PLATYPUS_DEBUG})
   print "+optimize=$optimize\n";
 }
 
+if($^O eq 'freebsd' || $^O eq 'dragonfly')
+{
+  if($lddlflags =~ m{-L/usr/local/lib})
+  {
+    require Text::ParseWords;
+    my %seen;
+    foreach my $flag (Text::ParseWords::shellwords($ldflags))
+    {
+      next if $seen{$flag};
+      $seen{$flag}++;
+      next unless $flag =~ /^-L/;
+
+      print "-lddlflags=$lddlflags\n";
+      $lddlflags =~ s{(-L/usr/local/lib)}{$flag $1}g;
+      print "+lddlflags=$lddlflags\n";
+
+    }
+  }
+}
+
 my %args = (
   ABSTRACT           => 'Perl bindings for libpkgconf',
   AUTHOR             => [ 'Graham Ollis <plicease@cpan.org>' ],
