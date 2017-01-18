@@ -15,7 +15,7 @@ use Config;
 my $cc = $Config{cc};
 my $ld = $Config{ld};
 my $alien = 0;
-my $alien_ver = '0.03';
+my $alien_ver = '0.05';
 
 sub try
 {
