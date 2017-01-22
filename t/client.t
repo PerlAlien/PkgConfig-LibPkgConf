@@ -5,6 +5,7 @@ use File::Temp ();
 use File::Path qw( mkpath );
 use PkgConfig::LibPkgConf::Client;
 use PkgConfig::LibPkgConf::Util qw( path_sep );
+use File::Basename qw( basename );
 
 subtest 'basic create and destroy' => sub {
 
@@ -155,7 +156,12 @@ subtest 'scan all' => sub {
   my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1' );
   
   # er.  Just make sure.
-  is_deeply [$client->path], [qw( corpus/lib1 )] if $client->can('path');
+  subtest 'path' => sub {
+    my @path = $client->path;
+    is( scalar(@path), 1);
+    ok -f "$path[0]/$_" for qw( foo.pc  foo1.pc  foo1a.pc );
+    is( basename($path[0]), 'lib1' );
+  };
   
   my %p;
   

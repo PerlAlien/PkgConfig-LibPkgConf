@@ -7,7 +7,6 @@
 struct my_client_t {
   pkgconf_client_t client;
   FILE *auditf;
-  unsigned int flags;
   int maxdepth;
   SV *error_handler;
 };
@@ -75,7 +74,7 @@ my_pkg_iterator(const pkgconf_pkg_t *pkg, void *data)
 }
 
 static bool
-directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, unsigned int flags)
+directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag, void *data)
 {
   if(pkgconf_fragment_has_system_dir(client, frag))
     return false;
@@ -96,10 +95,10 @@ _init(object, args, error_handler, maxdepth)
   CODE:
     Newxz(self, 1, my_client_t);
     self->auditf = NULL;
-    self->flags  = PKGCONF_PKG_PKGF_NONE;
     self->error_handler = SvREFCNT_inc(error_handler);
     self->maxdepth = maxdepth;
     pkgconf_client_init(&self->client, my_error_handler, self);
+    pkgconf_client_set_flags(&self->client, PKGCONF_PKG_PKGF_NONE);
     hv_store((HV*)SvRV(object), "ptr", 3, newSViv(PTR2IV(self)), 0);
 
 
@@ -234,7 +233,7 @@ _find(self, name)
     my_client_t *self
     const char *name
   CODE:
-    RETVAL = PTR2IV(pkgconf_pkg_find(&self->client, name, self->flags));
+    RETVAL = PTR2IV(pkgconf_pkg_find(&self->client, name));
   OUTPUT:
     RETVAL
 
@@ -267,8 +266,19 @@ void
 _dir_list_build(self, env_only)
     my_client_t *self
     int env_only
+  INIT:
+    int old_flags;
   CODE:
-    pkgconf_pkg_dir_list_build(&self->client, env_only ? PKGCONF_PKG_PKGF_ENV_ONLY : PKGCONF_PKG_PKGF_NONE);
+    if(env_only)
+    {
+      old_flags = pkgconf_client_get_flags(&self->client);
+      pkgconf_client_set_flags(&self->client, old_flags | PKGCONF_PKG_PKGF_ENV_ONLY);
+    }
+    pkgconf_pkg_dir_list_build(&self->client);
+    if(env_only)
+    {
+      pkgconf_client_set_flags(&self->client, old_flags);
+    }
 
 
 void
@@ -382,22 +392,25 @@ _get_string(self, client, type)
     size_t len;
     int eflag;
     int flags;
+    int old_flags;
   CODE:
-    flags = client->flags;
+    old_flags = flags = pkgconf_client_get_flags(&client->client);
     if(type % 2)
       flags = flags | PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS;
+    pkgconf_client_set_flags(&client->client, flags);
     /*
      * TODO: attribute for max depth (also in the list version below)
      */
     eflag = type > 1
-      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth, flags)
-      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth, flags);
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth);
+    pkgconf_client_set_flags(&client->client, old_flags);   
     /*
      * TODO: throw an exception (also in the list verson below)
      */
     if(eflag != PKGCONF_PKG_ERRF_OK)
       XSRETURN_EMPTY;
-    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, client->flags);
+    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, NULL);
     len = pkgconf_fragment_render_len(&filtered_list);
     RETVAL = newSV(len == 1 ? len : len-1);
     SvPOK_on(RETVAL);
@@ -423,22 +436,25 @@ _get_list(self, client, type)
     HV *h;
     int eflag;
     int flags;
+    int old_flags;
   CODE:
-    flags = client->flags;
+    old_flags = flags = pkgconf_client_get_flags(&client->client);
     if(type % 2)
       flags = flags | PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS;
+    pkgconf_client_set_flags(&client->client, flags);
     /*
      * TODO: attribute for max depth
      */
     eflag = type > 1
-      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth, flags)
-      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth, flags);
+      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth)
+      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth);
+    pkgconf_client_set_flags(&client->client, old_flags);   
     /*
      * TODO: throw an exception
      */
     if(eflag != PKGCONF_PKG_ERRF_OK)
       XSRETURN_EMPTY;
-    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, client->flags);
+    pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, NULL);
     PKGCONF_FOREACH_LIST_ENTRY(filtered_list.head, node)
     {
       h = newHV();

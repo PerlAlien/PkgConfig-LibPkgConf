@@ -4,6 +4,7 @@ use Test::More;
 use File::Temp ();
 use PkgConfig::LibPkgConf::Package;
 use PkgConfig::LibPkgConf::Client;
+use File::Basename qw( basename );
 
 subtest 'find' => sub {
 
@@ -30,7 +31,14 @@ subtest 'find' => sub {
 
   is $pkg->refcount, 2, 'refcount';
   is $pkg->id, 'foo', 'id';
-  is $pkg->filename, 'corpus/lib1/foo.pc', 'filename';
+
+  subtest 'path' => sub {
+    my @path = $client->path;
+    is( scalar(@path), 1);
+    ok -f "$path[0]/$_" for qw( foo.pc  foo1.pc  foo1a.pc );
+    is( basename($path[0]), 'lib1' );
+  };
+
   is $pkg->realname, 'foo', 'realname';
   is $pkg->version, '1.2.3', 'version';
   is $pkg->description, 'A testing pkg-config file', 'description';

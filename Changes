@@ -1,5 +1,9 @@
 Revision history for PkgConfig-LibPkgConf
 
+  - Update XS to work with libpkgconf 1.2.0
+  - Requires libpkgconf 1.2.0
+  - No interface change
+
 0.03 2017-01-18 08:32:50 -0500
   - Fixed linker issues on FreeBSD
 

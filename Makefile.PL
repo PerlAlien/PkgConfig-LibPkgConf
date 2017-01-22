@@ -15,7 +15,8 @@ use Config;
 my $cc = $Config{cc};
 my $ld = $Config{ld};
 my $alien = 0;
-my $alien_ver = '0.05';
+my $alien_ver   = '0.07';
+my $pkgconf_min = '1.2.0';
 
 sub try
 {
@@ -26,7 +27,7 @@ sub try
     print "Probe with Alien::pkgconf\n";
     return (Alien::pkgconf->cflags, Alien::pkgconf->libs, Alien::pkgconf->version);
   }
-  
+
   foreach my $cmd (qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
     do {
@@ -36,6 +37,8 @@ sub try
     if($? == 0)
     {
       my @l = eval {
+        system $cmd, "--atleast-version=$pkgconf_min", 'libpkgconf';
+        die if $?;
         my $cflags = `$cmd --cflags $name`;
         die if $?;
         my $libs   = `$cmd --libs   $name`;
@@ -52,33 +55,43 @@ sub try
     }
   }
 
-  if(eval { require PkgConfig; 1 })
+  if(eval { require PkgConfig; PkgConfig::Version->can('new') })
   {
     my $package = PkgConfig->find($name);
     if(!$package->errmsg)
     {
-      print "Probe with PkgConfig.pm\n";
-      return ($package->get_cflags, $package->get_ldflags, $package->pkg_version);
+      my $version = PkgConfig::Version->new($package->pkg_version);
+      my $need    = PkgConfig::Version->new($pkgconf_min);
+      if($version >= $need)
+      {
+        print "Probe with PkgConfig.pm\n";
+        my $cflags = $package->get_cflags . ' ';
+        my $libs   = $package->get_ldflags . ' ';
+        return ($cflags, $libs, $version);
+      }
     }
   }
-  
+
   if(eval { require ExtUtils::PkgConfig; 1 })
   {
     # ick.  EU::PC cannot be required unconditionally
     # because it doesn't install without pkg-config.
     # also it is very unecessarily noisy!
-    my %info = eval { ExtUtils::PkgConfig->find($name) };
-    if(!$@)
+    if(ExtUtils::PkgConfig->atleast_version($name,$pkgconf_min))
     {
-      print "Probe with ExtUtils::PkgConfig\n";
-      return ($info{cflags}, $info{libs}, $info{modversion});
+      my %info = eval { ExtUtils::PkgConfig->find($name) };
+      if(!$@)
+      {
+        print "Probe with ExtUtils::PkgConfig\n";
+        return ($info{cflags}, $info{libs}, $info{modversion});
+      }
     }
   }
 
   $alien = 1;
   $cc = '$(FULLPERL) script/cc_wrapper.pl';
   $ld = '$(FULLPERL) script/ld_wrapper.pl';
-  return ('','');
+  return ('','', '');
 }
 
 my($ccflags, $ldflags, $version) = try 'libpkgconf';
