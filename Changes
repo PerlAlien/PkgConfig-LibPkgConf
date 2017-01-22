@@ -1,5 +1,6 @@
 Revision history for PkgConfig-LibPkgConf
 
+0.04 2017-01-22 02:43:49 -0500
   - Update XS to work with libpkgconf 1.2.0
   - Requires libpkgconf 1.2.0
   - No interface change

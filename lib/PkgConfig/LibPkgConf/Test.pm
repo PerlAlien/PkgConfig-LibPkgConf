@@ -5,7 +5,7 @@ use warnings;
 use base qw( Exporter );
 use PkgConfig::LibPkgConf::XS;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our @EXPORT_OK = qw( send_error send_log );
 
 1;
