@@ -28,7 +28,7 @@ sub try
     return (Alien::pkgconf->cflags, Alien::pkgconf->libs, Alien::pkgconf->version);
   }
 
-  foreach my $cmd (qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
+  foreach my $cmd ($ENV{PKG_CONFIG}, qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
     do {
       no warnings 'exec';
