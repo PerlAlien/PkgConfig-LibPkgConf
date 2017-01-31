@@ -549,6 +549,20 @@ version()
     RETVAL
 
 
+SV *
+path_relocate(in)
+    const char *in;
+  INIT:
+    char out[PKGCONF_BUFSIZE];
+    bool ok;
+  CODE:
+    strncpy(out, in, PKGCONF_BUFSIZE-1);
+    ok = pkgconf_path_relocate(out, sizeof out);
+    RETVAL = newSVpv(ok ? out : in, 0);
+  OUTPUT:
+    RETVAL
+
+
 MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Test
 
 

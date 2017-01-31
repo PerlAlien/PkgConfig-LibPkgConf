@@ -4,7 +4,7 @@ use Test::More;
 use File::Temp ();
 use File::Path qw( mkpath );
 use PkgConfig::LibPkgConf::Client;
-use PkgConfig::LibPkgConf::Util qw( path_sep );
+use PkgConfig::LibPkgConf::Util qw( path_sep path_relocate );
 use File::Basename qw( basename );
 
 subtest 'basic create and destroy' => sub {
@@ -193,13 +193,13 @@ subtest 'path attributes' => sub {
 
     is_deeply 
       [PkgConfig::LibPkgConf::Client->new->path], 
-      [map { "$root$_" } qw( /foo /bar /baz /ralph )];
+      [map { path_relocate "$root$_" } qw( /foo /bar /baz /ralph )];
     is_deeply
       [PkgConfig::LibPkgConf::Client->new(path => join($sep, map { "$root$_" } qw( /trans /formers )))->path], 
-      [map { "$root$_" } qw( /trans /formers )];
+      [map { path_relocate "$root$_" } qw( /trans /formers )];
     is_deeply
       [PkgConfig::LibPkgConf::Client->new(path => [map { "$root$_" } qw( /trans /formers )])->path], 
-      [map { "$root$_" } qw( /trans /formers )];
+      [map { path_relocate "$root$_" } qw( /trans /formers )];
   
   };
   
@@ -209,10 +209,10 @@ subtest 'path attributes' => sub {
 
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
-      [map { "$root$_" } qw( /foo/lib /bar/lib )];
+      [map { path_relocate "$root$_" } qw( /foo/lib /bar/lib )];
     is_deeply
       [PkgConfig::LibPkgConf::Client->new(filter_lib_dirs => [map { "$root$_" } qw( /trans/lib /formers/lib )])->filter_lib_dirs], 
-      [map { "$root$_" } qw( /trans/lib /formers/lib )];
+      [map { path_relocate "$root$_" } qw( /trans/lib /formers/lib )];
 
   };
 
@@ -222,10 +222,10 @@ subtest 'path attributes' => sub {
 
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
-      [map { "$root$_" } qw( /foo/include /bar/include )];
+      [map { path_relocate "$root$_" } qw( /foo/include /bar/include )];
     is_deeply
       [PkgConfig::LibPkgConf::Client->new(filter_include_dirs => [map { "$root$_" } qw( /trans/include /formers/include )])->filter_include_dirs], 
-      [map { "$root$_" } qw( /trans/include /formers/include )];
+      [map { path_relocate "$root$_" } qw( /trans/include /formers/include )];
 
   };
 

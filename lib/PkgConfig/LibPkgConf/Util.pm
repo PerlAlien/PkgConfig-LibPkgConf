@@ -6,7 +6,7 @@ use base qw( Exporter );
 use PkgConfig::LibPkgConf::XS;
 
 our $VERSION = '0.04';
-our @EXPORT_OK = qw( argv_split compare_version path_sep );
+our @EXPORT_OK = qw( argv_split compare_version path_sep path_relocate );
 
 =head1 NAME
 
@@ -40,6 +40,12 @@ Splits a string into an argument list.
 Compare versions using RPM version comparison rules as described in the LSB.
 Returns -1 if the first version is greater, 0 if both versions are equal,
 1 if the second version is greater.
+
+=head2 path_relocate
+
+ my $path = path_relocate($path);
+
+Relocates a path, possibly calling realpath() or cygwin_conv_path() on it.
 
 =head2 path_sep
 

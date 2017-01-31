@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use PkgConfig::LibPkgConf::Util qw( argv_split compare_version path_sep );
+use PkgConfig::LibPkgConf::Util qw( argv_split compare_version path_sep path_relocate );
 
 subtest 'argv_split' => sub {
 
@@ -19,6 +19,20 @@ subtest 'compare_version' => sub {
 subtest 'path_sep' => sub {
 
   like path_sep(), qr{^[;:]$};
+
+};
+
+subtest 'path_relocate' => sub {
+
+  require Cwd;
+  
+  my $path = Cwd::getcwd();
+  
+  $path = path_relocate $path;
+  
+  ok $path, 'called path_relocate';
+  
+  note "path = $path";
 
 };
 
