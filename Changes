@@ -1,5 +1,7 @@
 Revision history for PkgConfig-LibPkgConf
 
+ - Update for 1.3.0 API
+
 0.05 2017-01-31 08:25:00 -0500
   - Expose pkgconf_path_relocate as PkgConfig::LibPkgConf::Util::path_relocate
 

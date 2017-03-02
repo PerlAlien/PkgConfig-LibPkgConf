@@ -15,8 +15,8 @@ use Config;
 my $cc = $Config{cc};
 my $ld = $Config{ld};
 my $alien = 0;
-my $alien_ver   = '0.07';
-my $pkgconf_min = '1.2.0';
+my $alien_ver   = '0.10';
+my $pkgconf_min = '1.3.0';
 
 sub try
 {
