@@ -85,9 +85,8 @@ MODULE = PkgConfig::LibPkgConf  PACKAGE = PkgConfig::LibPkgConf::Client
 
 
 void
-_init(object, args, error_handler, maxdepth)
+_init(object, error_handler, maxdepth)
     SV *object
-    SV *args
     SV *error_handler
     int maxdepth
   INIT:

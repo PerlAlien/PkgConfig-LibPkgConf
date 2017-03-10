@@ -111,7 +111,7 @@ sub new
   local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = $path_cvt->(delete $opts->{filter_lib_dirs}) if defined $opts->{filter_lib_dirs};
   local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = $path_cvt->(delete $opts->{filter_include_dirs}) if defined $opts->{filter_include_dirs};
 
-  _init($self, $opts, $eh, delete $opts->{maxdepth} || 2000);
+  _init($self, $eh, delete $opts->{maxdepth} || 2000);
 
   if($opts->{path})
   {
