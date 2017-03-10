@@ -9,3 +9,4 @@
 *.log
 *.bs
 /pm_to_blib
+*.swp

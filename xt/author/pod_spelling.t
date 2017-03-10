@@ -22,3 +22,6 @@ realname
 refcount
 LSB
 maxdepth
+Petr
+Pisar
+ppisar

@@ -215,6 +215,8 @@ Contributors:
 
 A. Wilcox (awilfox)
 
+Petr Pisar (ppisar)
+
 =head1 COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2016 Graham Ollis.
