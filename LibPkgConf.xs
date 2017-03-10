@@ -168,7 +168,6 @@ path(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
-    pkgconf_pkg_t *pkg;
     pkgconf_path_t *pnode;
     int count = 0;
   CODE:
@@ -185,7 +184,6 @@ filter_lib_dirs(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
-    pkgconf_pkg_t *pkg;
     pkgconf_path_t *pnode;
     int count = 0;
   CODE:
@@ -202,7 +200,6 @@ filter_include_dirs(self)
     my_client_t *self
   INIT:
     pkgconf_node_t *n;
-    pkgconf_pkg_t *pkg;
     pkgconf_path_t *pnode;
     int count = 0;
   CODE:
