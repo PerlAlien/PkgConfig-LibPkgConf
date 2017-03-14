@@ -5,7 +5,6 @@ use warnings;
 use base qw( Exporter );
 
 our $VERSION = '0.06';
-our $impl = 'unloaded';
 our @EXPORT = qw(
   pkgconf_cflags
   pkgconf_libs
@@ -14,8 +13,6 @@ our @EXPORT = qw(
   pkgconf_cflags_static
   pkgconf_libs_static
 );
-
-require PkgConfig::LibPkgConf::XS;
 
 =head1 NAME
 
