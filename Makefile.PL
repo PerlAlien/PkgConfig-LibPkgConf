@@ -94,8 +94,12 @@ sub try
   return ('','', '');
 }
 
-my($ccflags, $ldflags, $version) = try 'libpkgconf';
+my $ccflags = $Config{ccflags};
 
+my($libpkgconf_cflags, $ldflags, $version) = try 'libpkgconf';
+if (defined $libpkgconf_cflags and $libpkgconf_cflags ne '') {
+    $ccflags .=  ' ' . $libpkgconf_cflags;
+}
 unless($alien)
 {
   $ccflags .= "-DMY_PKGCONF_VERSION=$version";
