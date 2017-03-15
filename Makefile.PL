@@ -96,9 +96,11 @@ sub try
 
 my($ccflags, $ldflags, $version) = try 'libpkgconf';
 
+$ccflags = $ccflags ? "$ccflags $Config{ccflags}" : $Config{ccflags};
+
 unless($alien)
 {
-  $ccflags .= "-DMY_PKGCONF_VERSION=$version";
+  $ccflags .= " -DMY_PKGCONF_VERSION=$version";
 }
 
 print "($ccflags, $ldflags, $version)\n";
