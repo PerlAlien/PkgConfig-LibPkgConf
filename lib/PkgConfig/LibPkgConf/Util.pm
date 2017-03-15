@@ -5,7 +5,7 @@ use warnings;
 use base qw( Exporter );
 use PkgConfig::LibPkgConf::XS;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 our @EXPORT_OK = qw( argv_split compare_version path_sep path_relocate );
 
 =head1 NAME
