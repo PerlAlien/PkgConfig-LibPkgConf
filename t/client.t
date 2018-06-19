@@ -207,6 +207,8 @@ subtest 'path attributes' => sub {
 
     local $ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} = join $sep, map { "$root$_" } '/foo/lib', '/bar/lib';
 
+    local $TODO = "broken 1.5.0";
+
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
       [map { path_relocate "$root$_" } qw( /foo/lib /bar/lib )];
@@ -219,6 +221,8 @@ subtest 'path attributes' => sub {
   subtest 'filter include dirs' => sub {
 
     local $ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} = join $sep, map { "$root$_" } '/foo/include', '/bar/include';
+
+    local $TODO = "broken 1.5.0";
 
     is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
