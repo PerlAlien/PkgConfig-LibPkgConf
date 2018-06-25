@@ -6,6 +6,29 @@ use File::Path qw( mkpath );
 use PkgConfig::LibPkgConf::Client;
 use PkgConfig::LibPkgConf::Util qw( path_sep path_relocate );
 use File::Basename qw( basename );
+use Data::Dumper ();
+
+sub _dump
+{
+  Data::Dumper
+    ->new([$_[0]], ['$x'])
+    ->Terse(1)
+    ->Sortkeys(1)
+    ->Dump;
+}
+
+sub _is_deeply
+{
+  my($got, $expected, $name) = @_;
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
+  my $ok = is_deeply($got, $expected, $name);
+  unless($ok)
+  {
+    diag "got:      @{[ _dump($got)      ]}";
+    diag "expected: @{[ _dump($expected) ]}";
+  }
+  $ok;
+}
 
 subtest 'basic create and destroy' => sub {
 
@@ -171,7 +194,7 @@ subtest 'scan all' => sub {
     0;
   });
 
-  is_deeply \%p, { foo => 1, foo1 => 1, foo1a => 1 };
+  _is_deeply \%p, { foo => 1, foo1 => 1, foo1a => 1 };
 
 };
 
@@ -191,13 +214,13 @@ subtest 'path attributes' => sub {
     local $ENV{PKG_CONFIG_PATH} = join $sep, "$root/foo", "$root/bar";
     local $ENV{PKG_CONFIG_LIBDIR} = join $sep, "$root/baz", "$root/ralph";
 
-    is_deeply 
+    _is_deeply 
       [PkgConfig::LibPkgConf::Client->new->path], 
       [map { path_relocate "$root$_" } qw( /foo /bar /baz /ralph )];
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new(path => join($sep, map { "$root$_" } qw( /trans /formers )))->path], 
       [map { path_relocate "$root$_" } qw( /trans /formers )];
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new(path => [map { "$root$_" } qw( /trans /formers )])->path], 
       [map { path_relocate "$root$_" } qw( /trans /formers )];
   
@@ -209,10 +232,10 @@ subtest 'path attributes' => sub {
 
     local $TODO = "broken 1.5.0";
 
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_lib_dirs],
       [map { path_relocate "$root$_" } qw( /foo/lib /bar/lib )];
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new(filter_lib_dirs => [map { "$root$_" } qw( /trans/lib /formers/lib )])->filter_lib_dirs], 
       [map { path_relocate "$root$_" } qw( /trans/lib /formers/lib )];
 
@@ -224,10 +247,10 @@ subtest 'path attributes' => sub {
 
     local $TODO = "broken 1.5.0";
 
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new->filter_include_dirs],
       [map { path_relocate "$root$_" } qw( /foo/include /bar/include )];
-    is_deeply
+    _is_deeply
       [PkgConfig::LibPkgConf::Client->new(filter_include_dirs => [map { "$root$_" } qw( /trans/include /formers/include )])->filter_include_dirs], 
       [map { path_relocate "$root$_" } qw( /trans/include /formers/include )];
 
@@ -252,7 +275,7 @@ subtest 'global' => sub {
   
     my $client = PkgConfig::LibPkgConf::Client->new( global => { foo => 'bar' } );
     
-    is_deeply [$client->global('foo')], ['bar'];
+    _is_deeply [$client->global('foo')], ['bar'];
   
   };
 
@@ -260,9 +283,9 @@ subtest 'global' => sub {
   
     my $client = PkgConfig::LibPkgConf::Client->new;
   
-    is_deeply [$client->global('foo')], [];
+    _is_deeply [$client->global('foo')], [];
     $client->global(foo => 'bar');
-    is_deeply [$client->global('foo')], ['bar'];
+    _is_deeply [$client->global('foo')], ['bar'];
   };
 
   subtest 'expands' => sub {
