@@ -2,7 +2,7 @@ language: perl
 
 install:
   - mkdir /tmp/pkgconf
-  - git clone https://github.com/pkgconf/pkgconf.git /tmp/pkgconf/src
+  - git clone https://git.dereferenced.org/pkgconf/pkgconf.git /tmp/pkgconf/src
   - bash -c 'cd /tmp/pkgconf/src; ./autogen.sh && ./configure --prefix=/tmp/pkgconf --with-pic --disable-shared && make && make install'
   - env PKG_CONFIG_PATH=/tmp/pkgconf/lib/pkgconfig cpanm --installdeps -n -v .
 
