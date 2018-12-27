@@ -9,12 +9,12 @@ case $CIP_TAG in
 esac
 
 if cip exec perl -e 'exit !! ($] > 5.020)'; then
-  cip exec cpanm ExtUtils::MakeMaker@6.98
+  cip exec cpanm -n ExtUtils::MakeMaker@6.98
 fi
 
 if cip exec perl -e 'exit !! ($] > 5.008007)'; then
   # https://rt.cpan.org/Public/Bug/Display.html?id=128030
-  cip exec cpanm -v Net::SSLeay@1.82
+  cip exec cpanm -n -v Net::SSLeay@1.82
 fi
 
 if [ "x$INSTALL_PKGCONF_FROM_GIT" == "x1" ]; then
