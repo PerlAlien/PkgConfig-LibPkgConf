@@ -7,3 +7,7 @@ case $CIP_TAG in
     cip sudo yum install -y libpkgconf-devel
     ;;
 esac
+
+if cip exec perl -e 'exit !! ($] > 5.020)'; then
+  cip exec cpanm ExtUtils::MakeMaker@6.98
+fi

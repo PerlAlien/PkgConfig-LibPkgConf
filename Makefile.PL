@@ -9,7 +9,7 @@ BEGIN {
   }
 }
 
-use ExtUtils::MakeMaker 6.64;
+use ExtUtils::MakeMaker 6.98;
 use Config;
 
 my $cc = $Config{cc};
@@ -155,7 +155,7 @@ my %args = (
   OPTIMIZE           => $optimize,
 
   CONFIGURE_REQUIRES => {
-    "ExtUtils::MakeMaker" => '6.64',
+    "ExtUtils::MakeMaker" => '6.98',
   },
   BUILD_REQUIRES     => {
     ($alien ? ('Alien::pkgconf' => $alien_ver) : ()),
