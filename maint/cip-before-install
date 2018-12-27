@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -ex
+
+case $CIP_TAG in
+  *fedora*)
+    cip sudo yum install -y libpkgconf-devel
+    ;;
+esac
