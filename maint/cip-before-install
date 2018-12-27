@@ -12,7 +12,13 @@ if cip exec perl -e 'exit !! ($] > 5.020)'; then
   cip exec cpanm ExtUtils::MakeMaker@6.98
 fi
 
-if cip exec perl -e 'exit ! ($] > 5.008008'; then
+if cip exec perl -e 'exit !! ($] > 5.008007)'; then
   # https://rt.cpan.org/Public/Bug/Display.html?id=128030
   cpanm -v Net::SSLeay@1.82
+fi
+
+if $INSTALL_PKGCONF_FROM_GIT; then
+  cip sudo apt-get update
+  cip sudo apt-get -y install git automake autoconf libtool
+  cip sudo ./maint/cip-before-install-pkgconf-master
 fi

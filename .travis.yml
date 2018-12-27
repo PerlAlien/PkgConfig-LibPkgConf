@@ -18,6 +18,7 @@ jobs:
   include:
     - env: CIP_TAG=5.29
     - env: CIP_TAG=5.28-fedora29
+    - env: CIP_TAG=5.28 INSTALL_PKGCONF_FROM_GIT=1
     - env: CIP_TAG=5.28
     - env: CIP_TAG=5.26
     - env: CIP_TAG=5.24
