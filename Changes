@@ -1,5 +1,7 @@
 Revision history for PkgConfig-LibPkgConf
 
+  - Require EUMM 6.64
+
 0.09 2018-06-25 06:55:46 -0400
   - Compatability with pkgconf 1.5.0
   - Require pkgconf 1.5.0 (via Alien::pkgconf 0.12 if necessary)
