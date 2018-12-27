@@ -161,7 +161,7 @@ my %args = (
     ($alien ? ('Alien::pkgconf' => $alien_ver) : ()),
   },
   TEST_REQUIRES      => {
-    'Test::More' => '0.94',
+    'Test::More' => '0.98',
   },
   PREREQ_PM          => {
     #

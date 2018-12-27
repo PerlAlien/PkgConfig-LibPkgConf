@@ -1,6 +1,7 @@
 Revision history for PkgConfig-LibPkgConf
 
-  - Require EUMM 6.98
+  - Explicitly require EUMM 6.98
+  - Explicitly require Test::More 0.98
 
 0.09 2018-06-25 06:55:46 -0400
   - Compatability with pkgconf 1.5.0
