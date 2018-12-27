@@ -30,6 +30,7 @@ sub try
 
   foreach my $cmd ($ENV{PKG_CONFIG}, qw( pkgconf pkg-config ppkg-config pkg-config.pl ))
   {
+    next unless defined $cmd;
     do {
       no warnings 'exec';
       system $cmd, '--exists', $name;
