@@ -11,3 +11,7 @@ esac
 if cip exec perl -e 'exit !! ($] > 5.020)'; then
   cip exec cpanm ExtUtils::MakeMaker@6.98
 fi
+
+if cip exec perl -e 'exit ! ($] > 5.008008'; then
+  cpanm -v Net::SSLeay@1.82
+fi
