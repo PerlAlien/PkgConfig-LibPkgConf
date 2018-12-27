@@ -13,5 +13,6 @@ if cip exec perl -e 'exit !! ($] > 5.020)'; then
 fi
 
 if cip exec perl -e 'exit ! ($] > 5.008008'; then
+  # https://rt.cpan.org/Public/Bug/Display.html?id=128030
   cpanm -v Net::SSLeay@1.82
 fi
