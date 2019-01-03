@@ -211,7 +211,7 @@ otherwise it will return undef (technically empty list).
 sub variable
 {
   my($self, $name) = @_;
-  $self->_get_variable($self->{client}, $name);
+  $self->_get_variable($name);
 }
 
 =head1 SUPPORT

@@ -472,9 +472,8 @@ _get_list(self, client, type)
 
 
 void
-_get_variable(self, client, key)
+_get_variable(self, key)
     pkgconf_pkg_t *self
-    my_client_t *client
     const char *key
   INIT:
     pkgconf_node_t *node;
