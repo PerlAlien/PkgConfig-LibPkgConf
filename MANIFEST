@@ -1,4 +1,4 @@
-.travis.yml
+.github/workflows/linux.yml
 Changes
 corpus/lib1/foo.pc
 corpus/lib1/foo1.pc
