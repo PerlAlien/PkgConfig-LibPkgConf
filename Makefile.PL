@@ -172,11 +172,11 @@ my %args = (
     resources => {
       repository => {
         type => 'git',
-        url  => "http://github.com/plicease/PkgConfig-LibPkgConf.git",
-        web  => "http://github.com/plicease/PkgConfig-LibPkgConf",
+        url  => "http://github.com/PerlAlien/PkgConfig-LibPkgConf.git",
+        web  => "http://github.com/PerlAlien/PkgConfig-LibPkgConf",
       },
       bugtracker => {
-        web => "http://github.com/plicease/PkgConfig-LibPkgConf/issues",
+        web => "http://github.com/PerlAlien/PkgConfig-LibPkgConf/issues",
       },
       homepage => "https://metacpan.org/pod/PkgConfig-LibPkgConf",
       x_MailingList => "https://groups.google.com/forum/#!forum/perl5-alien",
