@@ -18,11 +18,11 @@ subtest 'simple stuff' => sub {
   eval { pkgconf_version('bogus') };
   like $@, qr{package bogus not found}, 'pkgconf_version not found';
 
-  is pkgconf_cflags('foo'), '-fPIC -I/test/include/foo ', 'pkgconf_cflags found';
+  is pkgconf_cflags('foo'), '-fPIC -I/test/include/foo', 'pkgconf_cflags found';
   eval { pkgconf_cflags('bogus') };
   like $@, qr{package bogus not found}, 'pkgconf_cflags not found';
 
-  is pkgconf_libs('foo'), '-L/test/lib -lfoo ', 'pkgconf_libs found';
+  is pkgconf_libs('foo'), '-L/test/lib -lfoo', 'pkgconf_libs found';
   eval { pkgconf_libs('bogus') };
   like $@, qr{package bogus not found}, 'pkgconf_libs not found';
 };
@@ -31,8 +31,8 @@ subtest 'static' => sub {
 
   local $ENV{PKG_CONFIG_PATH} = 'corpus/lib3';
   
-  is pkgconf_cflags_static('foo'), '-I/test/include/foo -DFOO_STATIC ', 'cflags';  
-  is pkgconf_libs_static('foo'), '-L/test/lib -lfoo -lbar -lbaz ', 'libs';  
+  is pkgconf_cflags_static('foo'), '-I/test/include/foo -DFOO_STATIC', 'cflags';
+  is pkgconf_libs_static('foo'), '-L/test/lib -lfoo -lbar -lbaz', 'libs';
 
 };
 

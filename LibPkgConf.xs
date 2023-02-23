@@ -14,7 +14,7 @@ struct my_client_t {
 typedef struct my_client_t my_client_t;
 
 static bool
-my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
+my_error_handler(const char *msg, const pkgconf_client_t *_, void *data)
 {
   dSP;
 
@@ -243,7 +243,7 @@ _package_from_file(self, filename)
   CODE:
     fp = fopen(filename, "r");
     if(fp != NULL)
-      RETVAL = PTR2IV(pkgconf_pkg_new_from_file(&self->client, filename, fp));
+      RETVAL = PTR2IV(pkgconf_pkg_new_from_file(&self->client, filename, fp, 0));
     else
       RETVAL = 0;
   OUTPUT:
@@ -385,6 +385,7 @@ _get_string(self, client, type)
   INIT:
     pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
     pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
+    char *buffer;
     size_t len;
     int eflag;
     int flags;
@@ -411,8 +412,14 @@ _get_string(self, client, type)
     len = pkgconf_fragment_render_len(&filtered_list, escape, NULL);
     RETVAL = newSV(len == 1 ? len : len-1);
     SvPOK_on(RETVAL);
+    buffer = SvPVX(RETVAL);
+    pkgconf_fragment_render_buf(&filtered_list, buffer, len, escape, NULL);
+    /*
+     * Trim trailing null bytes observed in pkgconf-1.9.4. Probably related to
+     * 648a2249fcb10bf679bdb587ef2bbddaab3023ad pkgconf commit.
+     */
+    while (len > 1 && buffer[len-2] == '\0') len--;
     SvCUR_set(RETVAL, len-1);
-    pkgconf_fragment_render_buf(&filtered_list, SvPVX(RETVAL), len, escape, NULL);
     pkgconf_fragment_free(&filtered_list);
     pkgconf_fragment_free(&unfiltered_list);
   OUTPUT:
