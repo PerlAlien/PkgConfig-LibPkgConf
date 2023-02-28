@@ -240,11 +240,15 @@ _package_from_file(self, filename)
     const char *filename
   INIT:
     FILE *fp;
+    pkgconf_pkg_t *package;
   CODE:
     fp = fopen(filename, "r");
-    if(fp != NULL)
-      RETVAL = PTR2IV(pkgconf_pkg_new_from_file(&self->client, filename, fp, 0));
-    else
+    if(fp != NULL) {
+      package = pkgconf_pkg_new_from_file(&self->client, filename, fp, 0);
+      if (package != NULL)
+         pkgconf_cache_add(&self->client, package);
+      RETVAL = PTR2IV(package);
+    } else
       RETVAL = 0;
   OUTPUT:
     RETVAL
@@ -407,8 +411,6 @@ _get_string(self, client, type)
     }
     pkgconf_client_set_flags(&client->client, flags);
     pkgconf_queue_push(&query, self->realname); /* TODO: contrain a version */
-    pkgconf_solution_free(&client->client, &dep_graph_root);
-    pkgconf_cache_free(&client->client);
     resolved = pkgconf_queue_solve(&client->client, &query, &dep_graph_root, client->maxdepth);
     pkgconf_queue_free(&query);
     if (!resolved) {
