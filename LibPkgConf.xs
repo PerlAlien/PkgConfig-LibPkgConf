@@ -383,6 +383,12 @@ _get_string(self, client, type)
     my_client_t *client
     int type
   INIT:
+    pkgconf_pkg_t dep_graph_root = {
+        .id = "",
+        .realname = "",
+        .flags = PKGCONF_PKG_PROPF_VIRTUAL,
+    };
+    pkgconf_list_t query = PKGCONF_LIST_INITIALIZER;
     pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
     pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
     char *buffer;
@@ -391,23 +397,39 @@ _get_string(self, client, type)
     int flags;
     int old_flags;
     bool escape = true;
+    bool resolved;
   CODE:
     old_flags = flags = pkgconf_client_get_flags(&client->client);
-    if(type % 2)
-      flags = flags | PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS;
+    if(type % 2) {
+      flags |= (PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
+    } else {
+      flags &= ~(PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
+    }
     pkgconf_client_set_flags(&client->client, flags);
+    pkgconf_queue_push(&query, self->realname); /* TODO: contrain a version */
+    pkgconf_solution_free(&client->client, &dep_graph_root);
+    pkgconf_cache_free(&client->client);
+    resolved = pkgconf_queue_solve(&client->client, &query, &dep_graph_root, client->maxdepth);
+    pkgconf_queue_free(&query);
+    if (!resolved) {
+      pkgconf_solution_free(&client->client, &dep_graph_root);
+      XSRETURN_EMPTY;
+    }
     /*
      * TODO: attribute for max depth (also in the list version below)
      */
     eflag = type > 1
-      ? pkgconf_pkg_cflags(&client->client, self, &unfiltered_list, client->maxdepth)
-      : pkgconf_pkg_libs(&client->client,   self, &unfiltered_list, client->maxdepth);
+      /* Depth more than 2 duplicates last clfags word. pkgconf hard-codes 2. */
+      ? pkgconf_pkg_cflags(&client->client, &dep_graph_root, &unfiltered_list, 2/*client->maxdepth*/)
+      : pkgconf_pkg_libs(&client->client,   &dep_graph_root, &unfiltered_list, client->maxdepth);
     pkgconf_client_set_flags(&client->client, old_flags);   
     /*
      * TODO: throw an exception (also in the list verson below)
      */
-    if(eflag != PKGCONF_PKG_ERRF_OK)
+    if(eflag != PKGCONF_PKG_ERRF_OK) {
+      pkgconf_solution_free(&client->client, &dep_graph_root);
       XSRETURN_EMPTY;
+    }
     pkgconf_fragment_filter(&client->client, &filtered_list, &unfiltered_list, directory_filter, NULL);
     len = pkgconf_fragment_render_len(&filtered_list, escape, NULL);
     RETVAL = newSV(len == 1 ? len : len-1);
@@ -422,6 +444,7 @@ _get_string(self, client, type)
     SvCUR_set(RETVAL, len-1);
     pkgconf_fragment_free(&filtered_list);
     pkgconf_fragment_free(&unfiltered_list);
+    pkgconf_solution_free(&client->client, &dep_graph_root);
   OUTPUT:
     RETVAL
 
