@@ -467,6 +467,11 @@ _get_string(self, client, type)
      */
     while (len > 1 && buffer[len-2] == '\0') len--;
     SvCUR_set(RETVAL, len-1);
+    /*
+     * Append a space if not already there to mimic pkgconf < 1.9 behaviour.
+     */
+    if (len > 1 && buffer[len-2] != ' ')
+      sv_catpvs(RETVAL, " ");
     pkgconf_fragment_free(&filtered_list);
   OUTPUT:
     RETVAL

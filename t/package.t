@@ -43,9 +43,9 @@ subtest 'find' => sub {
   is $pkg->version, '1.2.3', 'version';
   is $pkg->description, 'A testing pkg-config file', 'description';
 
-  is $pkg->libs, '-L/test/lib -lfoo', 'libs';
-  is $pkg->cflags, '-fPIC -I/test/include/foo', 'cflags';
-  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC', 'cflags_static';
+  is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
+  is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
+  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC ', 'cflags_static';
 
   my @libs           = $pkg->list_libs;
   my @cflags         = $pkg->list_cflags;
@@ -101,9 +101,9 @@ subtest 'package_from_file' => sub {
   is $pkg->version, '1.2.3', 'version';
   is $pkg->description, 'A testing pkg-config file', 'description';
 
-  is $pkg->libs, '-L/test/lib -lfoo', 'libs';
-  is $pkg->cflags, '-fPIC -I/test/include/foo', 'cflags';
-  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC', 'cflags_static';
+  is $pkg->libs, '-L/test/lib -lfoo ', 'libs';
+  is $pkg->cflags, '-fPIC -I/test/include/foo ', 'cflags';
+  is $pkg->cflags_static, '-fPIC -I/test/include/foo -DFOO_STATIC ', 'cflags_static';
 
   my @libs           = $pkg->list_libs;
   my @cflags         = $pkg->list_cflags;
@@ -146,8 +146,8 @@ subtest 'filte sys' => sub {
   
   my $pkg = $client->find('foo');
 
-  is $pkg->libs,   '-lfoo', 'libs';
-  is $pkg->cflags, '-fPIC', 'cflags';
+  is $pkg->libs,   '-lfoo ', 'libs';
+  is $pkg->cflags, '-fPIC ', 'cflags';
 
 };
 
@@ -162,8 +162,8 @@ subtest 'quotes and spaces' => sub {
   my $pkg = $client->find('foo1');
 
   TODO: { local $TODO = 'not important';
-  is $pkg->libs, "-L/test/lib -LC:/Program\\ Files/Foo\\ App/lib -lfoo1";
-  is $pkg->cflags, '-fPIC -I/test/include/foo1 -IC:/Program\\ Files/Foo\\ App/include';
+  is $pkg->libs, "-L/test/lib -LC:/Program\\ Files/Foo\\ App/lib -lfoo1 ";
+  is $pkg->cflags, '-fPIC -I/test/include/foo1 -IC:/Program\\ Files/Foo\\ App/include ';
   };
 
   is [map { "$_" } $pkg->list_libs]->[1], '-LC:/Program Files/Foo App/lib';
@@ -180,9 +180,9 @@ subtest 'package with prereq' => sub {
   
   my $pkg = $client->find('foo');
   
-  is $pkg->libs,           '-L/test/lib -lfoo -L/test2/lib -lbar';
-  is $pkg->cflags,         '-I/test/include/foo -I/test2/include/bar';
-  is $pkg->cflags_static,  '-I/test/include/foo -I/test2/include/bar -DFOO_STATIC -DBAR_STATIC';
+  is $pkg->libs,           '-L/test/lib -lfoo -L/test2/lib -lbar ';
+  is $pkg->cflags,         '-I/test/include/foo -I/test2/include/bar ';
+  is $pkg->cflags_static,  '-I/test/include/foo -I/test2/include/bar -DFOO_STATIC -DBAR_STATIC ';
 
   is_deeply [$pkg->list_libs],           [qw( -L/test/lib -lfoo -L/test2/lib -lbar )];
   is_deeply [$pkg->list_cflags],         [qw( -I/test/include/foo -I/test2/include/bar )];
@@ -200,7 +200,7 @@ subtest 'package with static libs' => sub {
   
   my $pkg = $client->find('foo');
 
-  is $pkg->libs_static, '-L/test/lib -lfoo -lbar -lbaz';
+  is $pkg->libs_static, '-L/test/lib -lfoo -lbar -lbaz ';
   is_deeply [$pkg->list_libs_static], [qw( -L/test/lib -lfoo -lbar -lbaz )];
 
 };

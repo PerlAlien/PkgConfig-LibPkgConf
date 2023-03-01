@@ -289,7 +289,7 @@ subtest 'global' => sub {
     my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib1', global => { prefix => '/klingon/autobot/force' } );
     my $pkg = $client->find('foo');
 
-    is( $pkg->cflags, '-fPIC -I/klingon/autobot/force/include/foo' );
+    is( $pkg->cflags, '-fPIC -I/klingon/autobot/force/include/foo ' );
 
   };
 
