@@ -3,6 +3,7 @@
 #include "XSUB.h"
 
 #include <libpkgconf/libpkgconf.h>
+#include <stdio.h>
 
 struct my_client_t {
   pkgconf_client_t client;
@@ -392,6 +393,7 @@ _get_string(self, client, type)
         .realname = "",
         .flags = PKGCONF_PKG_PROPF_VIRTUAL,
     };
+    char query_string[PKGCONF_BUFSIZE];
     pkgconf_list_t query = PKGCONF_LIST_INITIALIZER;
     pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
     pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
@@ -403,6 +405,13 @@ _get_string(self, client, type)
     bool escape = true;
     bool resolved;
   CODE:
+    if (sizeof(query_string) <=
+        snprintf(query_string, sizeof(query_string), "%s = %s",
+        self->realname, self->version))
+      XSRETURN_EMPTY;
+    pkgconf_queue_push(&query, query_string);
+    /*pkgconf_solution_free(&client->client, &dep_graph_root);
+    pkgconf_cache_free(&client->client);*/
     old_flags = flags = pkgconf_client_get_flags(&client->client);
     if(type % 2) {
       flags |= (PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
@@ -410,7 +419,6 @@ _get_string(self, client, type)
       flags &= ~(PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
     }
     pkgconf_client_set_flags(&client->client, flags);
-    pkgconf_queue_push(&query, self->realname); /* TODO: contrain a version */
     resolved = pkgconf_queue_solve(&client->client, &query, &dep_graph_root, client->maxdepth);
     pkgconf_queue_free(&query);
     if (!resolved) {
