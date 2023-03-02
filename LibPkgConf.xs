@@ -15,7 +15,11 @@ struct my_client_t {
 typedef struct my_client_t my_client_t;
 
 static bool
+#if LIBPKGCONF_VERSION >= 10900
 my_error_handler(const char *msg, const pkgconf_client_t *_, void *data)
+#else
+my_error_handler(const char *msg, const pkgconf_client_t *_, const void *data)
+#endif
 {
   dSP;
 
@@ -90,6 +94,7 @@ directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag,
 static bool
 solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
       pkgconf_list_t *filtered_list) {
+#if LIBPKGCONF_VERSION >= 10900
   pkgconf_pkg_t dep_graph_root = {
     .id = "",
     .realname = "",
@@ -97,17 +102,20 @@ solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
   };
   char query_string[PKGCONF_BUFSIZE];
   pkgconf_list_t query = PKGCONF_LIST_INITIALIZER;
+  bool resolved;
+#endif
   pkgconf_list_t unfiltered_list = PKGCONF_LIST_INITIALIZER;
   int eflag;
   int flags;
   int old_flags;
-  bool resolved;
 
+#if LIBPKGCONF_VERSION >= 10900
   if (sizeof(query_string) <=
       snprintf(query_string, sizeof(query_string), "%s = %s",
       package->realname, package->version))
     false;
   pkgconf_queue_push(&query, query_string);
+#endif
   old_flags = flags = pkgconf_client_get_flags(&client->client);
   if(type % 2) {
     flags |= (PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
@@ -115,31 +123,42 @@ solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
     flags &= ~(PKGCONF_PKG_PKGF_MERGE_PRIVATE_FRAGMENTS | PKGCONF_PKG_PKGF_SEARCH_PRIVATE);
   }
   pkgconf_client_set_flags(&client->client, flags);
+#if LIBPKGCONF_VERSION >= 10900
   resolved = pkgconf_queue_solve(&client->client, &query, &dep_graph_root, client->maxdepth);
   pkgconf_queue_free(&query);
   if (!resolved) {
     pkgconf_solution_free(&client->client, &dep_graph_root);
     false;
   }
+#endif
   /*
    * TODO: attribute for max depth (also in the list version below)
    */
   eflag = type > 1
+#if LIBPKGCONF_VERSION >= 10900
     /* Depth more than 2 duplicates last cflags word. pkgconf hard-codes 2. */
     ? pkgconf_pkg_cflags(&client->client, &dep_graph_root, &unfiltered_list, 2/*client->maxdepth*/)
     : pkgconf_pkg_libs(&client->client,   &dep_graph_root, &unfiltered_list, client->maxdepth);
+#else
+    ? pkgconf_pkg_cflags(&client->client, package,         &unfiltered_list, client->maxdepth)
+    : pkgconf_pkg_libs(&client->client,   package,         &unfiltered_list, client->maxdepth);
+#endif
   pkgconf_client_set_flags(&client->client, old_flags);
   /*
    * TODO: throw an exception (also in the list verson below)
    */
   if(eflag != PKGCONF_PKG_ERRF_OK) {
+#if LIBPKGCONF_VERSION >= 10900
     pkgconf_solution_free(&client->client, &dep_graph_root);
+#endif
     false;
   }
   pkgconf_fragment_filter(&client->client, filtered_list, &unfiltered_list, directory_filter, NULL);
 
   pkgconf_fragment_free(&unfiltered_list);
+#if LIBPKGCONF_VERSION >= 10900
   pkgconf_solution_free(&client->client, &dep_graph_root);
+#endif
   return true;
 }
 
@@ -306,7 +325,11 @@ _package_from_file(self, filename)
   CODE:
     fp = fopen(filename, "r");
     if(fp != NULL) {
+#if LIBPKGCONF_VERSION >= 10900
       package = pkgconf_pkg_new_from_file(&self->client, filename, fp, 0);
+#else
+      package = pkgconf_pkg_new_from_file(&self->client, filename, fp);
+#endif
       if (package != NULL)
          pkgconf_cache_add(&self->client, package);
       RETVAL = PTR2IV(package);
