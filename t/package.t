@@ -94,7 +94,7 @@ subtest 'package_from_file' => sub {
   note "cflags         = @{[ $pkg->cflags ]}";
   note "cflags_static  = @{[ $pkg->cflags_static ]}";
 
-  is $pkg->refcount, 2, 'refcount';
+  is $pkg->refcount, 1, 'refcount';
   is $pkg->id, 'foo', 'id';
   is $pkg->filename, 'corpus/lib1/foo.pc', 'filename';
   is $pkg->realname, 'foo', 'realname';

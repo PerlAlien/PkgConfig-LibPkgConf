@@ -88,12 +88,17 @@ directory_filter(const pkgconf_client_t *client, const pkgconf_fragment_t *frag,
 
 /*
  * Solve cflags/libs recursively using a pkgconf solver for the given package.
+ * Type encodes cflags/libs/shared/static queried property.
+ * loaded_from_file is true temporarily injecting a loaded-from-file package
+ * into a package cache as pkgconf_queue_solve() operates only on the cache
+ * and packages in a path.
  * On success returns true and the caller needs to free the filtered_list.
- * Otherwise, returns false and the lists are still untouched or already freed.
+ * Otherwise, returns false and the filterer_list is still untouched or
+ * already freed.
  */
 static bool
 solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
-      pkgconf_list_t *filtered_list) {
+      bool loaded_from_file, pkgconf_list_t *filtered_list) {
 #if LIBPKGCONF_VERSION >= 10900
   pkgconf_pkg_t dep_graph_root = {
     .id = "",
@@ -115,6 +120,10 @@ solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
       package->realname, package->version))
     false;
   pkgconf_queue_push(&query, query_string);
+  if (loaded_from_file)
+    loaded_from_file = (NULL == pkgconf_cache_lookup(&client->client, package->id));
+  if (loaded_from_file)
+    pkgconf_cache_add(&client->client, package);
 #endif
   old_flags = flags = pkgconf_client_get_flags(&client->client);
   if(type % 2) {
@@ -125,6 +134,8 @@ solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
   pkgconf_client_set_flags(&client->client, flags);
 #if LIBPKGCONF_VERSION >= 10900
   resolved = pkgconf_queue_solve(&client->client, &query, &dep_graph_root, client->maxdepth);
+  if (loaded_from_file)
+    pkgconf_cache_remove(&client->client, package);
   pkgconf_queue_free(&query);
   if (!resolved) {
     pkgconf_solution_free(&client->client, &dep_graph_root);
@@ -330,8 +341,6 @@ _package_from_file(self, filename)
 #else
       package = pkgconf_pkg_new_from_file(&self->client, filename, fp);
 #endif
-      if (package != NULL)
-         pkgconf_cache_add(&self->client, package);
       RETVAL = PTR2IV(package);
     } else
       RETVAL = 0;
@@ -467,17 +476,18 @@ pc_filedir(self)
 
 
 SV *
-_get_string(self, client, type)
+_get_string(self, client, type, loaded_from_file)
     pkgconf_pkg_t *self
     my_client_t *client
     int type
+    bool loaded_from_file
   INIT:
     pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
     char *buffer;
     size_t len;
     bool escape = true;
   CODE:
-    if (!solve_flags(self, client, type, &filtered_list))
+    if (!solve_flags(self, client, type, loaded_from_file, &filtered_list))
       XSRETURN_EMPTY;
     len = pkgconf_fragment_render_len(&filtered_list, escape, NULL);
     RETVAL = newSV(len == 1 ? len : len-1);
@@ -501,10 +511,11 @@ _get_string(self, client, type)
 
 
 void
-_get_list(self, client, type)
+_get_list(self, client, type, loaded_from_file)
     pkgconf_pkg_t *self
     my_client_t *client
     int type
+    bool loaded_from_file
   INIT:
     pkgconf_list_t filtered_list   = PKGCONF_LIST_INITIALIZER;
     pkgconf_node_t *node;
@@ -512,7 +523,7 @@ _get_list(self, client, type)
     int count = 0;
     HV *h;
   CODE:
-    if (!solve_flags(self, client, type, &filtered_list))
+    if (!solve_flags(self, client, type, loaded_from_file, &filtered_list))
       XSRETURN_EMPTY;
     PKGCONF_FOREACH_LIST_ENTRY(filtered_list.head, node)
     {

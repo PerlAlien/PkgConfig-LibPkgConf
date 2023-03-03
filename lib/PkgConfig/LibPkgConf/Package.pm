@@ -86,7 +86,7 @@ Library flags.  This usually includes things like C<-L/foo/lib> and C<-lfoo>.
 sub libs
 {
   my($self) = @_;
-  $self->_get_string($self->{client}, 0);
+  $self->_get_string($self->{client}, 0, exists $self->{filename});
 }
 
 =head2 libs_static
@@ -98,7 +98,7 @@ Static library flags.
 sub libs_static
 {
   my($self) = @_;
-  $self->_get_string($self->{client}, 1);
+  $self->_get_string($self->{client}, 1, exists $self->{filename});
 }
 
 =head2 cflags
@@ -110,7 +110,7 @@ Compiler flags.  This usually includes things like C<-I/foo/include> and C<-DFOO
 sub cflags
 {
   my($self) = @_;
-  $self->_get_string($self->{client}, 2);
+  $self->_get_string($self->{client}, 2, exists $self->{filename});
 }
 
 =head2 cflags_static
@@ -122,7 +122,7 @@ Static compiler flags.
 sub cflags_static
 {
   my($self) = @_;
-  $self->_get_string($self->{client}, 3);
+  $self->_get_string($self->{client}, 3, exists $self->{filename});
 }
 
 =head2 list_libs
@@ -144,7 +144,7 @@ sub list_libs
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
-  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 0);
+  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 0, exists $self->{filename});
 }
 
 =head2 list_libs_static
@@ -159,7 +159,7 @@ sub list_libs_static
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
-  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 1);
+  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 1, exists $self->{filename});
 }
 
 =head2 list_cflags
@@ -181,7 +181,7 @@ sub list_cflags
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
-  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 2);
+  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 2, exists $self->{filename});
 }
 
 =head2 list_cflags_static
@@ -196,7 +196,7 @@ sub list_cflags_static
 {
   my($self) = @_;
   require PkgConfig::LibPkgConf::Fragment;
-  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 3);
+  map { bless $_, 'PkgConfig::LibPkgConf::Fragment' } $self->_get_list($self->{client}, 3, exists $self->{filename});
 }
 
 =head2 variable
