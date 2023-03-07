@@ -6,6 +6,7 @@ corpus/lib1/foo1a.pc
 corpus/lib2/bar.pc
 corpus/lib2/foo.pc
 corpus/lib3/foo.pc
+corpus/lib4/bar.pc
 INSTALL
 lib/PkgConfig/LibPkgConf.pm
 lib/PkgConfig/LibPkgConf/Client.pm

@@ -117,7 +117,7 @@ solve_flags(pkgconf_pkg_t *package, my_client_t *client, int type,
 #if LIBPKGCONF_VERSION >= 10900
   if (sizeof(query_string) <=
       snprintf(query_string, sizeof(query_string), "%s = %s",
-      package->realname, package->version))
+      package->id, package->version))
     false;
   pkgconf_queue_push(&query, query_string);
   if (loaded_from_file)

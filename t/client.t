@@ -206,7 +206,7 @@ subtest 'path attributes' => sub {
 
   mkpath "$root/$_", 0, 0700 for qw(
     foo bar baz ralph trans formers foo/lib bar/lib trans/lib formers/lib
-    foo/include bar/include trans/include formers/include
+    /foo/include bar/include trans/include formers/include
   );
 
   subtest 'search path' => sub {
@@ -292,6 +292,18 @@ subtest 'global' => sub {
     is( $pkg->cflags, '-fPIC -I/klingon/autobot/force/include/foo ' );
 
   };
+
+};
+
+subtest 'a package with a different name' => sub {
+
+  my $client = PkgConfig::LibPkgConf::Client->new( path => 'corpus/lib4' );
+
+  is( $client->find('foo'), undef, 'A human-readable name foo is ignored');
+
+  my $pkg = $client->find('bar');
+  isnt( $pkg, undef, 'An identifier bar is found' );
+  is( $pkg->cflags, '-fPIC ', 'Cflags are retrieved' );
 
 };
 
