@@ -146,7 +146,7 @@ subtest 'filte sys' => sub {
   
   my $pkg = $client->find('foo');
 
-  is $pkg->libs,   '-lfoo ', 'libs';  
+  is $pkg->libs,   '-lfoo ', 'libs';
   is $pkg->cflags, '-fPIC ', 'cflags';
 
 };

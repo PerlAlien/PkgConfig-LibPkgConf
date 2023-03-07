@@ -1,0 +1,4 @@
+Name: foo
+Description: A pkg-config file whose identifier does not match its name
+Version: 1.2.3
+Cflags: -fPIC

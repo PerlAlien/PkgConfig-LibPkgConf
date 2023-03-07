@@ -31,8 +31,8 @@ subtest 'static' => sub {
 
   local $ENV{PKG_CONFIG_PATH} = 'corpus/lib3';
   
-  is pkgconf_cflags_static('foo'), '-I/test/include/foo -DFOO_STATIC ', 'cflags';  
-  is pkgconf_libs_static('foo'), '-L/test/lib -lfoo -lbar -lbaz ', 'libs';  
+  is pkgconf_cflags_static('foo'), '-I/test/include/foo -DFOO_STATIC ', 'cflags';
+  is pkgconf_libs_static('foo'), '-L/test/lib -lfoo -lbar -lbaz ', 'libs';
 
 };
 
